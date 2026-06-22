@@ -521,48 +521,12 @@
     <!-- ── Onboarding ── -->
     <div id="onboarding">
         <div class="step-container">
-            <div class="step-dots" id="step-dots">
-                <div class="step-dot active" id="dot-1"></div>
+            <div class="step-dots">
+                <div class="step-dot" id="dot-1"></div>
                 <div class="step-dot" id="dot-2"></div>
                 <div class="step-dot" id="dot-3"></div>
             </div>
-
-            <div id="step-1">
-                <h1 class="onboarding-title">🧠 AI Learning Roadmap</h1>
-                <p class="onboarding-sub" style="margin-bottom:2.5rem;">Build your personalized 90-day AI curriculum — free, curated, and adaptive.</p>
-                <h2 style="margin-bottom: 0.25rem;">What's your background?</h2>
-                <p style="margin-bottom: 0;">This helps us calibrate the technical depth.</p>
-                <div class="options-grid" id="bg-options">
-                    <div class="option-card" data-val="Student"><span class="option-icon">🎓</span>Student</div>
-                    <div class="option-card" data-val="Non-Tech"><span class="option-icon">💼</span>Working Pro (Non-Technical)</div>
-                    <div class="option-card" data-val="Tech"><span class="option-icon">💻</span>Working Pro (Technical)</div>
-                    <div class="option-card" data-val="Founder"><span class="option-icon">🚀</span>Founder / Entrepreneur</div>
-                </div>
-            </div>
-
-            <div id="step-2" style="display: none;">
-                <h2 style="margin-bottom: 0.25rem;">Daily time commitment?</h2>
-                <p style="margin-bottom: 0;">We'll scope tasks and resources to fit your schedule.</p>
-                <div class="options-grid" id="time-options">
-                    <div class="option-card" data-val="30m"><span class="option-icon">⚡</span>30 Minutes<br><small style="color:var(--text-faint);font-size:0.75rem;">Quick sprints</small></div>
-                    <div class="option-card" data-val="1h"><span class="option-icon">⏱️</span>1 Hour<br><small style="color:var(--text-faint);font-size:0.75rem;">Steady pace</small></div>
-                    <div class="option-card" data-val="2h"><span class="option-icon">🔥</span>2+ Hours<br><small style="color:var(--text-faint);font-size:0.75rem;">Deep dive</small></div>
-                </div>
-            </div>
-
-            <div id="step-3" style="display: none;">
-                <h2 style="margin-bottom: 0.25rem;">What's your primary goal?</h2>
-                <p style="margin-bottom: 0;">We'll emphasize the right skills and projects.</p>
-                <div class="options-grid" id="goal-options">
-                    <div class="option-card" data-val="Work"><span class="option-icon">📊</span>Use AI at Work<br><small style="color:var(--text-faint);font-size:0.75rem;">Productivity & tools</small></div>
-                    <div class="option-card" data-val="Build"><span class="option-icon">🛠️</span>Build with AI<br><small style="color:var(--text-faint);font-size:0.75rem;">Apps & products</small></div>
-                    <div class="option-card" data-val="Career"><span class="option-icon">🎯</span>Career Switch into AI<br><small style="color:var(--text-faint);font-size:0.75rem;">ML / AI roles</small></div>
-                </div>
-            </div>
-
-            <div id="action-bar" style="margin-top: 1.5rem; display: none;">
-                <button id="btn-next" class="btn" style="min-width: 200px;">Continue →</button>
-            </div>
+            <div id="onboarding-body"></div>
         </div>
     </div>
 
@@ -735,46 +699,123 @@ function resetProfile() {
 // ─────────────────────────────────────────────
 //  ONBOARDING
 // ─────────────────────────────────────────────
+// ── Onboarding step definitions ──
+const STEPS = [
+    {
+        stateKey: 'bg',
+        heading: "What's your background?",
+        sub: "This helps us calibrate the technical depth.",
+        options: [
+            { val: 'Student',   icon: '🎓', label: 'Student',                    hint: 'University or self-study' },
+            { val: 'Non-Tech',  icon: '💼', label: 'Working Pro (Non-Technical)', hint: 'Business, marketing, ops…' },
+            { val: 'Tech',      icon: '💻', label: 'Working Pro (Technical)',     hint: 'Developer, data, infra…' },
+            { val: 'Founder',   icon: '🚀', label: 'Founder / Entrepreneur',      hint: 'Building a product or startup' },
+        ]
+    },
+    {
+        stateKey: 'time',
+        heading: 'Daily time commitment?',
+        sub: "We'll scope tasks and resources to fit your schedule.",
+        options: [
+            { val: '30m', icon: '⚡',  label: '30 Minutes', hint: 'Quick focused sprints' },
+            { val: '1h',  icon: '⏱️', label: '1 Hour',      hint: 'Steady, consistent pace' },
+            { val: '2h',  icon: '🔥',  label: '2+ Hours',   hint: 'Deep dive sessions' },
+        ]
+    },
+    {
+        stateKey: 'goal',
+        heading: "What's your primary goal?",
+        sub: "We'll emphasize the right skills and projects.",
+        options: [
+            { val: 'Work',   icon: '📊', label: 'Use AI at Work',        hint: 'Productivity & automation' },
+            { val: 'Build',  icon: '🛠️', label: 'Build with AI',         hint: 'Apps, agents & products' },
+            { val: 'Career', icon: '🎯', label: 'Career Switch into AI', hint: 'ML / AI roles & portfolio' },
+        ]
+    }
+];
+
 function setupOnboarding() {
     document.getElementById('onboarding').style.display = 'flex';
     document.getElementById('app').style.display = 'none';
-
-    document.querySelectorAll('.option-card').forEach(card => {
-        card.addEventListener('click', e => {
-            const grid = e.currentTarget.closest('.options-grid');
-            grid.querySelectorAll('.option-card').forEach(c => c.classList.remove('selected'));
-            e.currentTarget.classList.add('selected');
-
-            if (grid.id === 'bg-options')   state.profile.bg   = e.currentTarget.dataset.val;
-            if (grid.id === 'time-options') state.profile.time = e.currentTarget.dataset.val;
-            if (grid.id === 'goal-options') state.profile.goal = e.currentTarget.dataset.val;
-
-            document.getElementById('action-bar').style.display = 'block';
-        });
-    });
-
-    document.getElementById('btn-next').addEventListener('click', () => {
-        if (currentStep === 1 && state.profile.bg) {
-            switchStep(1, 2);
-        } else if (currentStep === 2 && state.profile.time) {
-            switchStep(2, 3);
-            document.getElementById('btn-next').textContent = '🚀 Generate My Roadmap';
-        } else if (currentStep === 3 && state.profile.goal) {
-            saveState();
-            document.getElementById('onboarding').style.display = 'none';
-            loadApp();
-        }
-    });
+    renderOnboardingStep();
 }
 
-function switchStep(from, to) {
-    document.getElementById(`step-${from}`).style.display = 'none';
-    document.getElementById(`step-${to}`).style.display = 'block';
-    document.getElementById(`dot-${from}`).classList.remove('active');
-    document.getElementById(`dot-${from}`).classList.add('done');
-    document.getElementById(`dot-${to}`).classList.add('active');
-    document.getElementById('action-bar').style.display = 'none';
-    currentStep = to;
+function renderOnboardingStep() {
+    const step  = STEPS[currentStep - 1];
+    const body  = document.getElementById('onboarding-body');
+    const isLast = currentStep === STEPS.length;
+    const curVal = state.profile[step.stateKey];
+
+    // ── Update step dots ──
+    STEPS.forEach((_, i) => {
+        const dot = document.getElementById(`dot-${i + 1}`);
+        dot.className = 'step-dot';
+        if (i + 1 < currentStep)  dot.classList.add('done');
+        if (i + 1 === currentStep) dot.classList.add('active');
+    });
+
+    // ── Show title only on step 1 ──
+    const titleHtml = currentStep === 1
+        ? `<h1 class="onboarding-title">🧠 AI Learning Roadmap</h1>
+           <p class="onboarding-sub" style="margin-bottom:2rem;">Build your personalized 90-day AI curriculum — free, curated, and adaptive.</p>`
+        : '';
+
+    // ── Options grid ──
+    const optionsHtml = step.options.map(o => `
+        <div class="option-card${curVal === o.val ? ' selected' : ''}" data-val="${o.val}" onclick="selectOption(this, '${step.stateKey}', '${o.val}')">
+            <span class="option-icon">${o.icon}</span>
+            <span style="font-weight:600;">${o.label}</span>
+            <small style="color:var(--text-faint);font-size:0.75rem;display:block;margin-top:2px;">${o.hint}</small>
+        </div>`).join('');
+
+    // ── Navigation buttons ──
+    const backBtn = currentStep > 1
+        ? `<button class="btn btn-outline" onclick="goBack()" style="min-width:120px;">← Back</button>`
+        : '';
+    const nextLabel = isLast ? '🚀 Generate My Roadmap' : 'Continue →';
+    const nextDisabled = !curVal ? 'opacity:0.4;pointer-events:none;' : '';
+
+    body.innerHTML = `
+        ${titleHtml}
+        <h2 style="margin-bottom:0.25rem;">${step.heading}</h2>
+        <p style="margin-bottom:0;">${step.sub}</p>
+        <div class="options-grid" style="margin-bottom:0;">${optionsHtml}</div>
+        <div style="display:flex;gap:0.75rem;justify-content:center;margin-top:1.5rem;">
+            ${backBtn}
+            <button class="btn" id="btn-next" style="min-width:180px;${nextDisabled}" onclick="goNext()">${nextLabel}</button>
+        </div>`;
+}
+
+function selectOption(el, key, val) {
+    // Update state
+    state.profile[key] = val;
+    // Update UI — deselect siblings, select clicked
+    el.closest('.options-grid').querySelectorAll('.option-card').forEach(c => c.classList.remove('selected'));
+    el.classList.add('selected');
+    // Enable Next button
+    const btn = document.getElementById('btn-next');
+    if (btn) { btn.style.opacity = '1'; btn.style.pointerEvents = 'auto'; }
+}
+
+function goNext() {
+    const step = STEPS[currentStep - 1];
+    if (!state.profile[step.stateKey]) return; // guard — shouldn't happen
+    if (currentStep < STEPS.length) {
+        currentStep++;
+        renderOnboardingStep();
+    } else {
+        // Final step — launch app
+        saveState();
+        document.getElementById('onboarding').style.display = 'none';
+        loadApp();
+    }
+}
+
+function goBack() {
+    if (currentStep > 1) {
+        currentStep--;
+        renderOnboardingStep();
+    }
 }
 
 // ─────────────────────────────────────────────
