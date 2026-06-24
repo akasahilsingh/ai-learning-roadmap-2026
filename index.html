@@ -464,6 +464,64 @@
         }
         .resource-title { font-weight: 600; font-size: 0.88rem; color: var(--text-main); line-height: 1.4; }
         .resource-provider { font-size: 0.76rem; color: var(--text-muted); }
+        .resource-meta-row { display: flex; align-items: center; gap: 0.4rem; flex-wrap: wrap; margin-top: 0.3rem; }
+        .resource-time { font-size: 0.68rem; color: var(--text-faint); font-weight: 500; }
+        .resource-format-icon { font-size: 0.72rem; opacity: 0.6; }
+
+        /* ── Difficulty Badges ── */
+        .difficulty-badge {
+            font-size: 0.62rem;
+            font-weight: 700;
+            padding: 0.12rem 0.4rem;
+            border-radius: 4px;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+        }
+        .difficulty-beginner { color: #10B981; background: rgba(16, 185, 129, 0.12); }
+        .difficulty-intermediate { color: #F59E0B; background: rgba(245, 158, 11, 0.12); }
+        .difficulty-advanced { color: #EF4444; background: rgba(239, 68, 68, 0.12); }
+
+        /* ── Resource Filter Bar ── */
+        .resource-filters {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 0.75rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .filter-group {
+            display: flex;
+            gap: 0.25rem;
+            align-items: center;
+        }
+        .filter-label {
+            font-size: 0.68rem;
+            color: var(--text-faint);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            margin-right: 0.25rem;
+        }
+        .filter-btn {
+            font-size: 0.7rem;
+            padding: 0.2rem 0.55rem;
+            border-radius: 5px;
+            border: 1px solid var(--border);
+            background: transparent;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-family: inherit;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+        .filter-btn:hover { border-color: var(--border-strong); color: var(--text-main); }
+        .filter-btn.active { border-color: var(--primary); color: var(--primary); background: rgba(99, 102, 241, 0.08); }
+        .filter-separator {
+            width: 1px;
+            height: 16px;
+            background: var(--border);
+            margin: 0 0.25rem;
+        }
 
         /* ── Toast Notification ── */
         #toast {
@@ -525,6 +583,7 @@
                 <div class="step-dot" id="dot-1"></div>
                 <div class="step-dot" id="dot-2"></div>
                 <div class="step-dot" id="dot-3"></div>
+                <div class="step-dot" id="dot-4"></div>
             </div>
             <div id="onboarding-body"></div>
         </div>
@@ -606,61 +665,113 @@
 //  RESOURCES KNOWLEDGE BASE
 // ─────────────────────────────────────────────
 const RESOURCES = {
-    // Official Docs
-    openai_docs:       { title: "OpenAI Platform Docs", provider: "OpenAI", type: "Docs", url: "https://platform.openai.com/docs/", free: true },
-    openai_cookbook:   { title: "OpenAI Cookbook", provider: "OpenAI", type: "Examples", url: "https://cookbook.openai.com/", free: true },
-    openai_prompt:     { title: "Prompt Engineering Guide", provider: "OpenAI", type: "Guide", url: "https://platform.openai.com/docs/guides/prompt-engineering", free: true },
-    anthropic_prompt:  { title: "Claude Prompt Engineering", provider: "Anthropic", type: "Docs", url: "https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/overview", free: true },
-    anthropic_docs:    { title: "Anthropic Developer Docs", provider: "Anthropic", type: "Docs", url: "https://docs.anthropic.com/", free: true },
-    gemini_docs:       { title: "Google AI for Developers", provider: "Google", type: "Docs", url: "https://ai.google.dev/gemini-api/docs", free: true },
+    // ── Official Docs ──
+    openai_docs:       { title: "OpenAI Platform Docs", provider: "OpenAI", type: "Docs", url: "https://platform.openai.com/docs/", free: true, difficulty: "intermediate", format: "docs", time: "Ongoing ref" },
+    openai_cookbook:   { title: "OpenAI Cookbook", provider: "OpenAI", type: "Examples", url: "https://cookbook.openai.com/", free: true, difficulty: "intermediate", format: "article", time: "2–3h" },
+    openai_prompt:     { title: "Prompt Engineering Guide", provider: "OpenAI", type: "Guide", url: "https://platform.openai.com/docs/guides/prompt-engineering", free: true, difficulty: "intermediate", format: "article", time: "30 min" },
+    anthropic_prompt:  { title: "Claude Prompt Engineering", provider: "Anthropic", type: "Docs", url: "https://docs.anthropic.com/en/docs/build-with-claude/prompt-engineering/overview", free: true, difficulty: "intermediate", format: "article", time: "45 min" },
+    anthropic_docs:    { title: "Anthropic Developer Docs", provider: "Anthropic", type: "Docs", url: "https://docs.anthropic.com/", free: true, difficulty: "intermediate", format: "docs", time: "Ongoing ref" },
+    gemini_docs:       { title: "Google AI for Developers", provider: "Google", type: "Docs", url: "https://ai.google.dev/gemini-api/docs", free: true, difficulty: "intermediate", format: "docs", time: "Ongoing ref" },
 
-    // Courses
-    dl_prompt:         { title: "ChatGPT Prompt Engineering for Devs", provider: "DeepLearning.AI × OpenAI", type: "Course", url: "https://www.deeplearning.ai/short-courses/chatgpt-prompt-engineering-for-developers/", free: true },
-    dl_langchain:      { title: "LangChain for LLM Application Dev", provider: "DeepLearning.AI", type: "Course", url: "https://www.deeplearning.ai/short-courses/langchain-for-llm-application-development/", free: true },
-    dl_rag:            { title: "Building and Evaluating Advanced RAG", provider: "DeepLearning.AI", type: "Course", url: "https://www.deeplearning.ai/short-courses/building-evaluating-advanced-rag/", free: true },
-    dl_agents:         { title: "AI Agents in LangGraph", provider: "DeepLearning.AI", type: "Course", url: "https://www.deeplearning.ai/short-courses/ai-agents-in-langgraph/", free: true },
-    dl_finetuning:     { title: "Finetuning Large Language Models", provider: "DeepLearning.AI", type: "Course", url: "https://www.deeplearning.ai/short-courses/finetuning-large-language-models/", free: true },
-    dl_evals:          { title: "Evaluating and Debugging Generative AI", provider: "DeepLearning.AI × W&B", type: "Course", url: "https://www.deeplearning.ai/short-courses/evaluating-debugging-generative-ai/", free: true },
-    hf_nlp:            { title: "NLP Course", provider: "Hugging Face", type: "Course", url: "https://huggingface.co/learn/nlp-course/", free: true },
-    hf_agents:         { title: "Agents Course", provider: "Hugging Face", type: "Course", url: "https://huggingface.co/learn/agents-course/", free: true },
-    fastai:            { title: "Practical Deep Learning for Coders", provider: "fast.ai", type: "Course", url: "https://course.fast.ai/", free: true },
-    ms_ai:             { title: "AI for Beginners (12-week)", provider: "Microsoft", type: "Curriculum", url: "https://microsoft.github.io/AI-For-Beginners/", free: true },
-    andrej_zero2hero:  { title: "Neural Networks: Zero to Hero", provider: "Andrej Karpathy", type: "YouTube", url: "https://karpathy.ai/zero-to-hero.html", free: true },
-    "3b1b_transformers": { title: "Attention in Transformers, Visually Explained", provider: "3Blue1Brown", type: "YouTube", url: "https://www.youtube.com/watch?v=eMlx5fFNoYc", free: true },
+    // ── Courses (Technical) ──
+    dl_prompt:         { title: "ChatGPT Prompt Engineering for Devs", provider: "DeepLearning.AI × OpenAI", type: "Course", url: "https://www.deeplearning.ai/short-courses/chatgpt-prompt-engineering-for-developers/", free: true, difficulty: "intermediate", format: "course", time: "1h" },
+    dl_langchain:      { title: "LangChain for LLM Application Dev", provider: "DeepLearning.AI", type: "Course", url: "https://www.deeplearning.ai/short-courses/langchain-for-llm-application-development/", free: true, difficulty: "intermediate", format: "course", time: "1h" },
+    dl_rag:            { title: "Building and Evaluating Advanced RAG", provider: "DeepLearning.AI", type: "Course", url: "https://www.deeplearning.ai/short-courses/building-evaluating-advanced-rag/", free: true, difficulty: "advanced", format: "course", time: "1h" },
+    dl_agents:         { title: "AI Agents in LangGraph", provider: "DeepLearning.AI", type: "Course", url: "https://www.deeplearning.ai/short-courses/ai-agents-in-langgraph/", free: true, difficulty: "advanced", format: "course", time: "1h" },
+    dl_finetuning:     { title: "Finetuning Large Language Models", provider: "DeepLearning.AI", type: "Course", url: "https://www.deeplearning.ai/short-courses/finetuning-large-language-models/", free: true, difficulty: "advanced", format: "course", time: "1h" },
+    dl_evals:          { title: "Evaluating and Debugging Generative AI", provider: "DeepLearning.AI × W&B", type: "Course", url: "https://www.deeplearning.ai/short-courses/evaluating-debugging-generative-ai/", free: true, difficulty: "advanced", format: "course", time: "1h" },
+    hf_nlp:            { title: "NLP Course", provider: "Hugging Face", type: "Course", url: "https://huggingface.co/learn/nlp-course/", free: true, difficulty: "advanced", format: "course", time: "15h" },
+    hf_agents:         { title: "Agents Course", provider: "Hugging Face", type: "Course", url: "https://huggingface.co/learn/agents-course/", free: true, difficulty: "advanced", format: "course", time: "10h" },
+    fastai:            { title: "Practical Deep Learning for Coders", provider: "fast.ai", type: "Course", url: "https://course.fast.ai/", free: true, difficulty: "advanced", format: "course", time: "30h" },
+    ms_ai:             { title: "AI for Beginners (12-week)", provider: "Microsoft", type: "Curriculum", url: "https://microsoft.github.io/AI-For-Beginners/", free: true, difficulty: "beginner", format: "interactive", time: "12 weeks" },
+    andrej_zero2hero:  { title: "Neural Networks: Zero to Hero", provider: "Andrej Karpathy", type: "YouTube", url: "https://karpathy.ai/zero-to-hero.html", free: true, difficulty: "advanced", format: "video", time: "13h" },
+    "3b1b_transformers": { title: "Attention in Transformers, Visually Explained", provider: "3Blue1Brown", type: "YouTube", url: "https://www.youtube.com/watch?v=eMlx5fFNoYc", free: true, difficulty: "beginner", format: "video", time: "27 min" },
 
-    // Frameworks & Tools
-    langchain:         { title: "LangChain Documentation", provider: "LangChain", type: "Docs", url: "https://python.langchain.com/", free: true },
-    langgraph:         { title: "LangGraph Documentation", provider: "LangChain", type: "Docs", url: "https://langchain-ai.github.io/langgraph/", free: true },
-    llamaindex:        { title: "LlamaIndex Documentation", provider: "LlamaIndex", type: "Docs", url: "https://docs.llamaindex.ai/", free: true },
-    mcp_docs:          { title: "Model Context Protocol (MCP)", provider: "Anthropic", type: "Docs", url: "https://modelcontextprotocol.io/", free: true },
-    pinecone:          { title: "Vector Database Learning Center", provider: "Pinecone", type: "Guide", url: "https://www.pinecone.io/learn/", free: true },
-    chroma_docs:       { title: "Chroma Vector DB Docs", provider: "Chroma", type: "Docs", url: "https://docs.trychroma.com/", free: true },
+    // ── Frameworks & Tools ──
+    langchain:         { title: "LangChain Documentation", provider: "LangChain", type: "Docs", url: "https://python.langchain.com/", free: true, difficulty: "advanced", format: "docs", time: "Ongoing ref" },
+    langgraph:         { title: "LangGraph Documentation", provider: "LangChain", type: "Docs", url: "https://langchain-ai.github.io/langgraph/", free: true, difficulty: "advanced", format: "docs", time: "Ongoing ref" },
+    llamaindex:        { title: "LlamaIndex Documentation", provider: "LlamaIndex", type: "Docs", url: "https://docs.llamaindex.ai/", free: true, difficulty: "advanced", format: "docs", time: "Ongoing ref" },
+    mcp_docs:          { title: "Model Context Protocol (MCP)", provider: "Anthropic", type: "Docs", url: "https://modelcontextprotocol.io/", free: true, difficulty: "advanced", format: "docs", time: "2h" },
+    pinecone:          { title: "Vector Database Learning Center", provider: "Pinecone", type: "Guide", url: "https://www.pinecone.io/learn/", free: true, difficulty: "intermediate", format: "article", time: "3h" },
+    chroma_docs:       { title: "Chroma Vector DB Docs", provider: "Chroma", type: "Docs", url: "https://docs.trychroma.com/", free: true, difficulty: "advanced", format: "docs", time: "Ongoing ref" },
 
-    // No-Code / Tools
-    zapier_ai:         { title: "AI Automation Workflows", provider: "Zapier", type: "Guide", url: "https://zapier.com/ai", free: true },
-    cursor_docs:       { title: "Cursor AI Editor Docs", provider: "Cursor", type: "Docs", url: "https://docs.cursor.com/", free: false },
-    v0_docs:           { title: "v0 by Vercel — AI UI Generator", provider: "Vercel", type: "Tool", url: "https://v0.dev/", free: true },
+    // ── No-Code / Tools ──
+    zapier_ai:         { title: "AI Automation Workflows", provider: "Zapier", type: "Guide", url: "https://zapier.com/ai", free: true, difficulty: "beginner", format: "tool", time: "20 min" },
+    cursor_docs:       { title: "Cursor AI Editor Docs", provider: "Cursor", type: "Docs", url: "https://docs.cursor.com/", free: false, difficulty: "intermediate", format: "docs", time: "1h" },
+    v0_docs:           { title: "v0 by Vercel — AI UI Generator", provider: "Vercel", type: "Tool", url: "https://v0.dev/", free: true, difficulty: "beginner", format: "tool", time: "15 min" },
 
-    // Research & Reading
-    attention_paper:   { title: "\"Attention Is All You Need\" (Original Paper)", provider: "Google Brain", type: "Research Paper", url: "https://arxiv.org/abs/1706.03762", free: true },
-    rag_paper:         { title: "RAG: Retrieval-Augmented Generation (Paper)", provider: "Meta AI", type: "Research Paper", url: "https://arxiv.org/abs/2005.11401", free: true },
-    react_paper:       { title: "ReAct: Synergizing Reasoning and Acting (Paper)", provider: "Princeton / Google", type: "Research Paper", url: "https://arxiv.org/abs/2210.03629", free: true },
+    // ── Research & Reading ──
+    attention_paper:   { title: "\"Attention Is All You Need\" (Original Paper)", provider: "Google Brain", type: "Research Paper", url: "https://arxiv.org/abs/1706.03762", free: true, difficulty: "advanced", format: "paper", time: "2h" },
+    rag_paper:         { title: "RAG: Retrieval-Augmented Generation (Paper)", provider: "Meta AI", type: "Research Paper", url: "https://arxiv.org/abs/2005.11401", free: true, difficulty: "advanced", format: "paper", time: "1.5h" },
+    react_paper:       { title: "ReAct: Synergizing Reasoning and Acting (Paper)", provider: "Princeton / Google", type: "Research Paper", url: "https://arxiv.org/abs/2210.03629", free: true, difficulty: "advanced", format: "paper", time: "1.5h" },
 
-    // Career
-    kaggle_intro:      { title: "Intro to Machine Learning", provider: "Kaggle", type: "Course", url: "https://www.kaggle.com/learn/intro-to-machine-learning", free: true },
-    aidungeon_ml:      { title: "ML Zoomcamp (self-paced)", provider: "DataTalks.Club", type: "Course", url: "https://github.com/DataTalksClub/machine-learning-zoomcamp", free: true },
-    arxiv_sanity:      { title: "Arxiv Sanity Preserver (Paper Feed)", provider: "Andrej Karpathy", type: "Tool", url: "http://arxiv-sanity.com/", free: true },
+    // ── Career ──
+    kaggle_intro:      { title: "Intro to Machine Learning", provider: "Kaggle", type: "Course", url: "https://www.kaggle.com/learn/intro-to-machine-learning", free: true, difficulty: "intermediate", format: "interactive", time: "3h" },
+    aidungeon_ml:      { title: "ML Zoomcamp (self-paced)", provider: "DataTalks.Club", type: "Course", url: "https://github.com/DataTalksClub/machine-learning-zoomcamp", free: true, difficulty: "advanced", format: "course", time: "40h" },
+    arxiv_sanity:      { title: "Arxiv Sanity Preserver (Paper Feed)", provider: "Andrej Karpathy", type: "Tool", url: "http://arxiv-sanity.com/", free: true, difficulty: "advanced", format: "tool", time: "Ongoing" },
 
-    // Evals & Prod
-    langsmith:         { title: "LangSmith (LLM Tracing & Eval)", provider: "LangChain", type: "Tool", url: "https://smith.langchain.com/", free: true },
-    helicone:          { title: "Helicone — LLM Observability", provider: "Helicone", type: "Tool", url: "https://www.helicone.ai/", free: true },
+    // ── Evals & Prod ──
+    langsmith:         { title: "LangSmith (LLM Tracing & Eval)", provider: "LangChain", type: "Tool", url: "https://smith.langchain.com/", free: true, difficulty: "advanced", format: "tool", time: "2h" },
+    helicone:          { title: "Helicone — LLM Observability", provider: "Helicone", type: "Tool", url: "https://www.helicone.ai/", free: true, difficulty: "intermediate", format: "tool", time: "30 min" },
+
+    // ── Existing New Resources ──
+    elevenlabs:        { title: "ElevenLabs Voice AI", provider: "ElevenLabs", type: "Tool", url: "https://elevenlabs.io/", free: false, difficulty: "beginner", format: "tool", time: "20 min" },
+    stability_ai:      { title: "Stability AI Platform", provider: "Stability AI", type: "Docs", url: "https://platform.stability.ai/", free: false, difficulty: "advanced", format: "docs", time: "1h" },
+    replicate:         { title: "Replicate — Run ML Models", provider: "Replicate", type: "Tool", url: "https://replicate.com/", free: false, difficulty: "intermediate", format: "tool", time: "30 min" },
+    botpress:          { title: "Botpress Chatbot Builder", provider: "Botpress", type: "Tool", url: "https://botpress.com/", free: true, difficulty: "beginner", format: "tool", time: "1h" },
+    voiceflow:         { title: "Voiceflow — Conversational AI", provider: "Voiceflow", type: "Tool", url: "https://www.voiceflow.com/", free: true, difficulty: "beginner", format: "tool", time: "1h" },
+    make_com:          { title: "Make — Visual Automation", provider: "Make", type: "Tool", url: "https://www.make.com/", free: true, difficulty: "beginner", format: "tool", time: "30 min" },
+    perplexity:        { title: "Perplexity AI Research", provider: "Perplexity", type: "Tool", url: "https://www.perplexity.ai/", free: true, difficulty: "beginner", format: "tool", time: "10 min" },
+    copilot_docs:      { title: "GitHub Copilot Docs", provider: "GitHub", type: "Docs", url: "https://docs.github.com/en/copilot", free: false, difficulty: "intermediate", format: "docs", time: "45 min" },
+    lora_paper:        { title: "LoRA: Low-Rank Adaptation (Paper)", provider: "Microsoft", type: "Research Paper", url: "https://arxiv.org/abs/2106.09685", free: true, difficulty: "advanced", format: "paper", time: "1.5h" },
+    weights_biases:    { title: "Weights & Biases", provider: "W&B", type: "Tool", url: "https://wandb.ai/", free: true, difficulty: "advanced", format: "tool", time: "2h" },
+    aws_bedrock:       { title: "AWS Bedrock", provider: "AWS", type: "Docs", url: "https://aws.amazon.com/bedrock/", free: false, difficulty: "advanced", format: "docs", time: "2h" },
+    gcp_vertex:        { title: "Google Vertex AI", provider: "Google Cloud", type: "Docs", url: "https://cloud.google.com/vertex-ai/docs", free: false, difficulty: "advanced", format: "docs", time: "2h" },
+    azure_openai:      { title: "Azure OpenAI Service", provider: "Microsoft Azure", type: "Docs", url: "https://learn.microsoft.com/en-us/azure/ai-services/openai/", free: false, difficulty: "advanced", format: "docs", time: "2h" },
+    kaggle_pandas:     { title: "Pandas Course", provider: "Kaggle", type: "Course", url: "https://www.kaggle.com/learn/pandas", free: true, difficulty: "intermediate", format: "interactive", time: "4h" },
+    runway:            { title: "Runway ML — AI Video", provider: "Runway", type: "Tool", url: "https://runwayml.com/", free: false, difficulty: "beginner", format: "tool", time: "30 min" },
+    plotly_docs:       { title: "Plotly Python Visualization", provider: "Plotly", type: "Docs", url: "https://plotly.com/python/", free: true, difficulty: "intermediate", format: "docs", time: "3h" },
+    notion_ai:         { title: "Notion AI", provider: "Notion", type: "Tool", url: "https://www.notion.so/product/ai", free: false, difficulty: "beginner", format: "tool", time: "15 min" },
+    otter_ai:          { title: "Otter.ai — AI Meeting Notes", provider: "Otter", type: "Tool", url: "https://otter.ai/", free: true, difficulty: "beginner", format: "tool", time: "10 min" },
+    replit:            { title: "Replit — Online IDE with AI", provider: "Replit", type: "Tool", url: "https://replit.com/", free: true, difficulty: "beginner", format: "tool", time: "20 min" },
+    midjourney:        { title: "Midjourney — AI Image Gen", provider: "Midjourney", type: "Tool", url: "https://www.midjourney.com/", free: false, difficulty: "beginner", format: "tool", time: "30 min" },
+
+    // ═══════════════════════════════════════════
+    //  BEGINNER & NON-TECH FRIENDLY RESOURCES
+    // ═══════════════════════════════════════════
+    ai_for_everyone:   { title: "AI for Everyone", provider: "DeepLearning.AI (Coursera)", type: "Course", url: "https://www.coursera.org/learn/ai-for-everyone", free: true, difficulty: "beginner", format: "course", time: "6h" },
+    elements_of_ai:    { title: "Elements of AI — Free Interactive Course", provider: "University of Helsinki", type: "Course", url: "https://www.elementsofai.com/", free: true, difficulty: "beginner", format: "interactive", time: "30h" },
+    google_ai_essentials: { title: "Google AI Essentials", provider: "Google (Coursera)", type: "Course", url: "https://www.coursera.org/learn/google-ai-essentials", free: true, difficulty: "beginner", format: "course", time: "10h" },
+    learn_prompting:   { title: "Learn Prompting — Interactive Guide", provider: "Learn Prompting", type: "Guide", url: "https://learnprompting.org/", free: true, difficulty: "beginner", format: "interactive", time: "5h" },
+    chatgpt_guide:     { title: "ChatGPT Beginner's Complete Guide", provider: "OpenAI Help Center", type: "Guide", url: "https://help.openai.com/en/articles/6783457-chatgpt-general-faq", free: true, difficulty: "beginner", format: "article", time: "15 min" },
+    ibm_what_is_ai:    { title: "What is Artificial Intelligence?", provider: "IBM Technology", type: "YouTube", url: "https://www.youtube.com/watch?v=uMqziEPOyQo", free: true, difficulty: "beginner", format: "video", time: "7 min" },
+    ibm_what_is_rag:   { title: "What is RAG? (Explained Simply)", provider: "IBM Technology", type: "YouTube", url: "https://www.youtube.com/watch?v=T-D1OfcDW1M", free: true, difficulty: "beginner", format: "video", time: "8 min" },
+    fireship_ai:       { title: "AI Explained in 100 Seconds", provider: "Fireship", type: "YouTube", url: "https://www.youtube.com/watch?v=PVPSdGBiHPE", free: true, difficulty: "beginner", format: "video", time: "2 min" },
+    tina_huang:        { title: "How I'd Learn AI in 2025 (Beginner's Guide)", provider: "Tina Huang", type: "YouTube", url: "https://www.youtube.com/watch?v=kCc8FmEb1nY", free: true, difficulty: "beginner", format: "video", time: "15 min" },
+    matt_wolfe_agents: { title: "AI Agents Explained for Normal People", provider: "Matt Wolfe", type: "YouTube", url: "https://www.youtube.com/watch?v=F8NKVhkZZWI", free: true, difficulty: "beginner", format: "video", time: "20 min" },
+    zapier_blog:       { title: "AI Workflow Automation Templates", provider: "Zapier Blog", type: "Guide", url: "https://zapier.com/blog/ai-workflow-automation/", free: true, difficulty: "beginner", format: "article", time: "10 min" },
+    nocode_ai_guide:   { title: "No-Code AI Tools: Complete Guide", provider: "Zapier", type: "Guide", url: "https://zapier.com/blog/no-code-ai-tools/", free: true, difficulty: "beginner", format: "article", time: "12 min" },
+    prompt_hero:       { title: "PromptHero — AI Prompt Marketplace", provider: "PromptHero", type: "Tool", url: "https://prompthero.com/", free: true, difficulty: "beginner", format: "tool", time: "15 min" },
+    there_is_an_ai:    { title: "There's an AI for That — AI Tool Directory", provider: "There's an AI", type: "Tool", url: "https://theresanaiforthat.com/", free: true, difficulty: "beginner", format: "tool", time: "10 min" },
+    future_tools:      { title: "Future Tools — Curated AI Tool List", provider: "Matt Wolfe", type: "Tool", url: "https://www.futuretools.io/", free: true, difficulty: "beginner", format: "tool", time: "10 min" },
+    ai_for_work:       { title: "AI for Workplace Productivity", provider: "Google Workspace", type: "Guide", url: "https://workspace.google.com/solutions/ai/", free: true, difficulty: "beginner", format: "article", time: "10 min" },
+    canva_ai:          { title: "Canva Magic Studio — AI Design", provider: "Canva", type: "Tool", url: "https://www.canva.com/magic/", free: true, difficulty: "beginner", format: "tool", time: "20 min" },
+    gamma_ai:          { title: "Gamma — AI Presentations", provider: "Gamma", type: "Tool", url: "https://gamma.app/", free: true, difficulty: "beginner", format: "tool", time: "15 min" },
+    claude_intro:      { title: "Getting Started with Claude", provider: "Anthropic", type: "Guide", url: "https://www.anthropic.com/claude", free: true, difficulty: "beginner", format: "article", time: "10 min" },
+    gemini_intro:      { title: "Getting Started with Gemini", provider: "Google", type: "Guide", url: "https://gemini.google.com/", free: true, difficulty: "beginner", format: "article", time: "10 min" },
+    dl_ai_everyone_genai: { title: "Generative AI for Everyone", provider: "DeepLearning.AI (Coursera)", type: "Course", url: "https://www.coursera.org/learn/generative-ai-for-everyone", free: true, difficulty: "beginner", format: "course", time: "5h" },
+    ai_career_guide:   { title: "How to Start a Career in AI (2025)", provider: "DeepLearning.AI", type: "Guide", url: "https://www.deeplearning.ai/resources/career/", free: true, difficulty: "beginner", format: "article", time: "15 min" },
+    huggingface_intro: { title: "Introduction to Hugging Face", provider: "Hugging Face", type: "Guide", url: "https://huggingface.co/docs", free: true, difficulty: "intermediate", format: "docs", time: "1h" },
+    "3b1b_neural_nets": { title: "But What is a Neural Network?", provider: "3Blue1Brown", type: "YouTube", url: "https://www.youtube.com/watch?v=aircAruvnKk", free: true, difficulty: "beginner", format: "video", time: "19 min" },
+    two_min_papers:    { title: "AI Research Made Simple", provider: "Two Minute Papers", type: "YouTube", url: "https://www.youtube.com/@TwoMinutePapers", free: true, difficulty: "beginner", format: "video", time: "5 min" },
+    prompt_patterns:   { title: "26 Prompt Engineering Patterns", provider: "Vanderbilt University", type: "Course", url: "https://www.coursera.org/learn/prompt-engineering", free: true, difficulty: "beginner", format: "course", time: "18h" },
 };
 
 // ─────────────────────────────────────────────
 //  APP STATE
 // ─────────────────────────────────────────────
 let state = {
-    profile: { bg: null, time: null, goal: null },
+    profile: { bg: null, time: null, goal: null, subGoal: null },
     progress: {},
     notes: {},
     stats: { streak: 0, lastActiveDate: null }
@@ -670,15 +781,17 @@ let currentStep = 1;
 // ─────────────────────────────────────────────
 //  INIT
 // ─────────────────────────────────────────────
+const STORAGE_KEY = 'aiRoadmap2026v3';
+
 function init() {
-    const saved = localStorage.getItem('aiRoadmap2026v2');
+    const saved = localStorage.getItem(STORAGE_KEY);
     if (saved) {
         try {
             const parsed = JSON.parse(saved);
             state = { ...state, ...parsed };
         } catch(e) {}
     }
-    if (state.profile.bg && state.profile.time && state.profile.goal) {
+    if (state.profile.bg && state.profile.time && state.profile.goal && state.profile.subGoal) {
         loadApp();
     } else {
         setupOnboarding();
@@ -686,30 +799,29 @@ function init() {
 }
 
 function saveState() {
-    localStorage.setItem('aiRoadmap2026v2', JSON.stringify(state));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
 }
 
 function resetProfile() {
     if (confirm('Reset all progress and regenerate your roadmap?')) {
-        localStorage.removeItem('aiRoadmap2026v2');
+        localStorage.removeItem(STORAGE_KEY);
         location.reload();
     }
 }
 
 // ─────────────────────────────────────────────
-//  ONBOARDING
+//  ONBOARDING (4 STEPS — DYNAMIC STEP 4)
 // ─────────────────────────────────────────────
-// ── Onboarding step definitions ──
-const STEPS = [
+const BASE_STEPS = [
     {
         stateKey: 'bg',
         heading: "What's your background?",
         sub: "This helps us calibrate the technical depth.",
         options: [
-            { val: 'Student',   icon: '🎓', label: 'Student',                    hint: 'University or self-study' },
-            { val: 'Non-Tech',  icon: '💼', label: 'Working Pro (Non-Technical)', hint: 'Business, marketing, ops…' },
-            { val: 'Tech',      icon: '💻', label: 'Working Pro (Technical)',     hint: 'Developer, data, infra…' },
-            { val: 'Founder',   icon: '🚀', label: 'Founder / Entrepreneur',      hint: 'Building a product or startup' },
+            { val: 'Student',  icon: '🎓', label: 'Student',                    hint: 'University or self-study' },
+            { val: 'Non-Tech', icon: '💼', label: 'Working Pro (Non-Technical)', hint: 'Business, marketing, ops…' },
+            { val: 'Tech',     icon: '💻', label: 'Working Pro (Technical)',     hint: 'Developer, data, infra…' },
+            { val: 'Founder',  icon: '🚀', label: 'Founder / Entrepreneur',     hint: 'Building a product or startup' },
         ]
     },
     {
@@ -725,7 +837,7 @@ const STEPS = [
     {
         stateKey: 'goal',
         heading: "What's your primary goal?",
-        sub: "We'll emphasize the right skills and projects.",
+        sub: "This shapes the entire curriculum direction.",
         options: [
             { val: 'Work',   icon: '📊', label: 'Use AI at Work',        hint: 'Productivity & automation' },
             { val: 'Build',  icon: '🛠️', label: 'Build with AI',         hint: 'Apps, agents & products' },
@@ -734,6 +846,43 @@ const STEPS = [
     }
 ];
 
+const SUB_GOAL_OPTIONS = {
+    Work: [
+        { val: 'Writing', icon: '✍️', label: 'Writing & Content',    hint: 'Blog posts, copy, reports' },
+        { val: 'Data',    icon: '📈', label: 'Data & Research',       hint: 'Analysis, insights, BI' },
+        { val: 'Coding',  icon: '💻', label: 'Software Development', hint: 'AI-assisted coding' },
+        { val: 'Ops',     icon: '⚙️', label: 'Ops & Management',     hint: 'Workflow automation, team AI' },
+    ],
+    Build: [
+        { val: 'Chatbot',   icon: '💬', label: 'Chatbot',              hint: 'Conversational AI assistant' },
+        { val: 'RAG',       icon: '📚', label: 'RAG / Knowledge Base', hint: 'Search over your own data' },
+        { val: 'Agent',     icon: '🤖', label: 'AI Agent',             hint: 'Autonomous task execution' },
+        { val: 'Creative',  icon: '🎨', label: 'Creative AI',          hint: 'Image, audio, video gen' },
+        { val: 'Analytics', icon: '📊', label: 'Analytics Tool',       hint: 'Data dashboards & NL queries' },
+    ],
+    Career: [
+        { val: 'ML_Eng',    icon: '🧠', label: 'ML / AI Engineer',        hint: 'Build & deploy ML systems' },
+        { val: 'Product',   icon: '📋', label: 'AI Product & Prompt Eng.', hint: 'Strategy, design & prompting' },
+        { val: 'DataSci',   icon: '🔬', label: 'Data Scientist',          hint: 'Stats, ML, NLP & LLMs' },
+        { val: 'Architect', icon: '🏗️', label: 'Solutions Architect',     hint: 'Cloud AI, security & MLOps' },
+    ]
+};
+
+function getSteps() {
+    const steps = [...BASE_STEPS];
+    const goal = state.profile.goal;
+    if (goal && SUB_GOAL_OPTIONS[goal]) {
+        steps.push({
+            stateKey: 'subGoal',
+            heading: goal === 'Work' ? 'What will you use AI for?' :
+                     goal === 'Build' ? 'What do you want to build?' : 'Which AI career path?',
+            sub: 'This determines your specialized curriculum track.',
+            options: SUB_GOAL_OPTIONS[goal]
+        });
+    }
+    return steps;
+}
+
 function setupOnboarding() {
     document.getElementById('onboarding').style.display = 'flex';
     document.getElementById('app').style.display = 'none';
@@ -741,26 +890,29 @@ function setupOnboarding() {
 }
 
 function renderOnboardingStep() {
-    const step  = STEPS[currentStep - 1];
-    const body  = document.getElementById('onboarding-body');
-    const isLast = currentStep === STEPS.length;
+    const steps = getSteps();
+    const step  = steps[currentStep - 1];
+    if (!step) return;
+    const body   = document.getElementById('onboarding-body');
+    const isLast = currentStep === steps.length;
     const curVal = state.profile[step.stateKey];
 
-    // ── Update step dots ──
-    STEPS.forEach((_, i) => {
-        const dot = document.getElementById(`dot-${i + 1}`);
+    // Update step dots
+    for (let i = 1; i <= 4; i++) {
+        const dot = document.getElementById(`dot-${i}`);
+        if (!dot) continue;
         dot.className = 'step-dot';
-        if (i + 1 < currentStep)  dot.classList.add('done');
-        if (i + 1 === currentStep) dot.classList.add('active');
-    });
+        if (i > steps.length) { dot.style.opacity = '0.3'; continue; }
+        dot.style.opacity = '1';
+        if (i < currentStep)  dot.classList.add('done');
+        if (i === currentStep) dot.classList.add('active');
+    }
 
-    // ── Show title only on step 1 ──
     const titleHtml = currentStep === 1
         ? `<h1 class="onboarding-title">🧠 AI Learning Roadmap</h1>
-           <p class="onboarding-sub" style="margin-bottom:2rem;">Build your personalized 90-day AI curriculum — free, curated, and adaptive.</p>`
+           <p class="onboarding-sub" style="margin-bottom:2rem;">Build your personalized AI curriculum — free, curated, and adaptive.</p>`
         : '';
 
-    // ── Options grid ──
     const optionsHtml = step.options.map(o => `
         <div class="option-card${curVal === o.val ? ' selected' : ''}" data-val="${o.val}" onclick="selectOption(this, '${step.stateKey}', '${o.val}')">
             <span class="option-icon">${o.icon}</span>
@@ -768,7 +920,6 @@ function renderOnboardingStep() {
             <small style="color:var(--text-faint);font-size:0.75rem;display:block;margin-top:2px;">${o.hint}</small>
         </div>`).join('');
 
-    // ── Navigation buttons ──
     const backBtn = currentStep > 1
         ? `<button class="btn btn-outline" onclick="goBack()" style="min-width:120px;">← Back</button>`
         : '';
@@ -787,24 +938,26 @@ function renderOnboardingStep() {
 }
 
 function selectOption(el, key, val) {
-    // Update state
     state.profile[key] = val;
-    // Update UI — deselect siblings, select clicked
+    if (key === 'goal') {
+        state.profile.subGoal = null;
+        renderOnboardingStep(); // re-render so button label updates for dynamic step 4
+        return;
+    }
     el.closest('.options-grid').querySelectorAll('.option-card').forEach(c => c.classList.remove('selected'));
     el.classList.add('selected');
-    // Enable Next button
     const btn = document.getElementById('btn-next');
     if (btn) { btn.style.opacity = '1'; btn.style.pointerEvents = 'auto'; }
 }
 
 function goNext() {
-    const step = STEPS[currentStep - 1];
-    if (!state.profile[step.stateKey]) return; // guard — shouldn't happen
-    if (currentStep < STEPS.length) {
+    const steps = getSteps();
+    const step = steps[currentStep - 1];
+    if (!step || !state.profile[step.stateKey]) return;
+    if (currentStep < steps.length) {
         currentStep++;
         renderOnboardingStep();
     } else {
-        // Final step — launch app
         saveState();
         document.getElementById('onboarding').style.display = 'none';
         loadApp();
@@ -819,287 +972,791 @@ function goBack() {
 }
 
 // ─────────────────────────────────────────────
-//  CURRICULUM BUILDER
+//  CURRICULUM SYSTEM (15 ADAPTIVE PATHS)
 // ─────────────────────────────────────────────
-function getTimeMultiplier() {
-    return { '30m': 3.5, '1h': 7.0, '2h': 14.0 }[state.profile.time] || 7.0;
+function mkWk(num, title, theme, baseHours, tasks, resKeys, time) {
+    const hrMult = { '30m': 3.5, '1h': 7.0, '2h': 14.0 }[time] || 7.0;
+    let hours = Math.max(1, Math.round(baseHours * (hrMult / 7)));
+    let finalTasks = [...tasks];
+    if (time === '30m') finalTasks = tasks.slice(0, Math.max(2, Math.ceil(tasks.length * 0.6)));
+    let resources = resKeys.map(k => RESOURCES[k]).filter(Boolean);
+    if (time === '30m') resources = resources.slice(0, 2);
+    return { id: `w${num}`, num, title, theme, hours, tasks: finalTasks, resources };
 }
 
 function buildCurriculum() {
-    const { bg, time, goal } = state.profile;
-    const isTech    = bg === 'Tech' || bg === 'Student';
-    const isFounder = bg === 'Founder';
-    const isBuild   = goal === 'Build';
-    const hrMult    = getTimeMultiplier();
-    let plan = [];
+    const { bg, time, goal, subGoal } = state.profile;
+    const isTech = bg === 'Tech' || bg === 'Student';
+    switch (goal) {
+        case 'Work':   return buildWorkRoadmap(time, subGoal, isTech);
+        case 'Build':  return buildBuildRoadmap(time, subGoal, isTech);
+        case 'Career': return buildCareerRoadmap(time, subGoal, isTech);
+        default:       return [];
+    }
+}
 
-    const wk = (num, title, theme, baseHours, tasks, resKeys, extraTasks30 = [], extraTasks2h = []) => {
-        let hours = Math.max(1, Math.round(baseHours * (hrMult / 7)));
-        let finalTasks = [...tasks];
-        if (time === '30m') finalTasks = tasks.slice(0, Math.max(2, Math.ceil(tasks.length * 0.55)));
-        if (time === '2h')  finalTasks = [...tasks, ...extraTasks2h];
+// ═══════════════════════════════════════════════
+//  WORK PATHS (8 weeks × 4 sub-goals)
+// ═══════════════════════════════════════════════
+function buildWorkRoadmap(time, subGoal, isTech) {
+    const p = [];
+    p.push(mkWk(1, "LLM Fundamentals & Ecosystem", "Foundation", 5, [
+        "Understand how LLMs work: tokens, transformers, inference",
+        "Compare GPT-4o, Claude 3.5 Sonnet, and Gemini 1.5 Pro",
+        "Set up accounts on OpenAI, Anthropic, and Google AI Studio",
+        isTech ? "Explore API docs, system prompts, and context windows" : "Explore chat interfaces and discover each model's strengths"
+    ], isTech ? ['ms_ai', '3b1b_transformers', 'openai_docs'] : ['ai_for_everyone', 'fireship_ai', '3b1b_transformers', 'chatgpt_guide'], time));
 
-        let resources = resKeys.map(k => RESOURCES[k]).filter(Boolean);
-        if (time === '30m') resources = resources.slice(0, 2);
+    switch (subGoal) {
+    case 'Writing':
+        p.push(mkWk(2, "Prompt Engineering for Content", "Prompting", 5, [
+            "Master persona and tone-of-voice prompts for writing styles",
+            isTech ? "Implement few-shot prompting with structured output" : "Create reusable prompt templates for emails, blogs, and reports",
+            "Compare writing quality across Claude, ChatGPT, and Gemini"
+        ], isTech ? ['openai_prompt', 'dl_prompt', 'anthropic_prompt'] : ['learn_prompting', 'prompt_patterns', 'claude_intro'], time));
+        p.push(mkWk(3, isTech ? "API-Driven Content Pipelines" : "AI Writing Workflows", "Content", 6, [
+            isTech ? "Set up Python + OpenAI API for content generation" : "Master ChatGPT and Claude for long-form content",
+            isTech ? "Build a script that generates articles from outlines" : "Use Custom GPTs to build a brand-voice writing assistant",
+            isTech ? "Implement batch content generation with variable injection" : "Set up Zapier to auto-draft social posts from blog content"
+        ], isTech ? ['openai_docs', 'openai_cookbook'] : ['zapier_ai', 'anthropic_docs'], time));
+        p.push(mkWk(4, isTech ? "Structured Output & Templates" : "Brand Voice & Style Systems", "Content", 6, [
+            isTech ? "Define JSON schemas for article metadata extraction" : "Build a brand style guide document for AI to follow",
+            isTech ? "Automate SEO meta-description generation via API" : "Train AI on your company tone using example documents",
+            isTech ? "Build a CLI tool for content repurposing" : "Create comparison matrices of AI tools for content types"
+        ], isTech ? ['openai_docs', 'anthropic_docs'] : ['anthropic_prompt', 'openai_prompt'], time));
+        p.push(mkWk(5, isTech ? "Content Quality & Evaluation" : "Editing & Refinement Workflows", "Quality", 6, [
+            isTech ? "Implement LLM-as-a-judge for content quality scoring" : "Master iterative refinement: draft → critique → revise",
+            isTech ? "Build automated A/B testing for prompt strategies" : "Use AI for proofreading, fact-checking, and consistency",
+            isTech ? "Set up content quality metrics and dashboards" : "Create editing checklists powered by AI feedback"
+        ], isTech ? ['langsmith', 'dl_evals'] : ['anthropic_prompt', 'openai_prompt'], time));
+        p.push(mkWk(6, isTech ? "Multi-Modal Content Generation" : "Visual & Multi-Format Content", "Multi-Modal", 5, [
+            isTech ? "Integrate image generation APIs (DALL·E, Stability AI)" : "Use Midjourney and DALL·E for blog illustrations",
+            isTech ? "Build a pipeline generating articles with images" : "Create slides with AI-generated content and visuals",
+            isTech ? "Experiment with ElevenLabs API for audio content" : "Explore AI video tools (Runway) for content repurposing"
+        ], isTech ? ['stability_ai', 'elevenlabs'] : ['midjourney', 'runway'], time));
+        p.push(mkWk(7, isTech ? "Content Automation & Deployment" : "Workflow Automation & Scale", "Automation", 6, [
+            isTech ? "Build a full pipeline: ideate → draft → review → publish" : "Set up end-to-end Zapier workflows for content distribution",
+            isTech ? "Deploy content generation as an API or internal tool" : "Automate newsletter creation from AI-summarized content",
+            isTech ? "Implement rate limiting, caching, cost optimization" : "Build a content repurposing system across platforms"
+        ], isTech ? ['openai_cookbook', 'helicone'] : ['zapier_ai', 'make_com'], time));
+        p.push(mkWk(8, "Capstone: Content System", "Project", 7, [
+            "Define your capstone: a complete AI content creation system",
+            isTech ? "Build and deploy a custom content generation tool" : "Design and document your complete AI content workflow",
+            "Test with real content needs and measure time savings",
+            "Write a case study documenting process and ROI"
+        ], ['openai_cookbook', 'langsmith'], time));
+        break;
 
-        return { id: `w${num}`, num, title, theme, hours, tasks: finalTasks, resources };
-    };
+    case 'Data':
+        p.push(mkWk(2, "Prompt Engineering for Data", "Prompting", 5, [
+            "Master data prompting: summarize, compare, extract patterns",
+            isTech ? "Use structured JSON output for data extraction" : "Learn to upload spreadsheets and ask analytical questions",
+            "Practice chain-of-thought for multi-step analysis"
+        ], isTech ? ['openai_prompt', 'dl_prompt', 'anthropic_prompt'] : ['learn_prompting', 'prompt_patterns', 'chatgpt_guide'], time));
+        p.push(mkWk(3, isTech ? "Python + AI Data Analysis" : "AI-Powered Data Exploration", "Analysis", 7, [
+            isTech ? "Set up Python with pandas and connect OpenAI API" : "Master ChatGPT Code Interpreter for dataset exploration",
+            isTech ? "Write scripts using LLMs to clean and categorize data" : "Upload CSV/Excel files and generate summary statistics",
+            isTech ? "Build a natural language to pandas query translator" : "Use Google Sheets AI and Excel Copilot for analysis"
+        ], isTech ? ['openai_docs', 'kaggle_pandas'] : ['openai_docs', 'anthropic_docs'], time));
+        p.push(mkWk(4, isTech ? "SQL Automation & Database AI" : "Spreadsheets & BI Tools", "Data Tools", 7, [
+            isTech ? "Build a natural language to SQL query generator" : "Set up AI-enhanced BI tools (Looker, Power BI Copilot)",
+            isTech ? "Automate database reporting with scheduled LLM queries" : "Create automated summary reports from raw data",
+            isTech ? "Implement anomaly detection with AI" : "Build template dashboards with AI-generated commentary"
+        ], isTech ? ['openai_docs', 'openai_cookbook'] : ['zapier_ai', 'openai_docs'], time));
+        p.push(mkWk(5, isTech ? "Data Visualization with AI" : "Data Storytelling", "Visualization", 6, [
+            isTech ? "Generate Plotly charts from natural language descriptions" : "Use ChatGPT to create compelling data narratives",
+            isTech ? "Build an interactive dashboard with AI-generated insights" : "Design presentation-ready charts with AI assistance",
+            isTech ? "Automate chart annotation and trend commentary" : "Learn to ask the right analytical questions to AI tools"
+        ], isTech ? ['plotly_docs', 'openai_cookbook'] : ['openai_docs', 'anthropic_docs'], time));
+        p.push(mkWk(6, isTech ? "Research Automation & Web Data" : "AI Research Workflows", "Research", 6, [
+            isTech ? "Build web scraping + AI summarization pipelines" : "Set up Perplexity AI for systematic research workflows",
+            isTech ? "Implement competitive analysis automation with AI" : "Use Claude document analysis for report synthesis",
+            isTech ? "Create an AI-powered research digest generator" : "Build a personal research knowledge base with AI summaries"
+        ], isTech ? ['openai_docs', 'langchain'] : ['perplexity', 'anthropic_docs'], time));
+        p.push(mkWk(7, isTech ? "Automated Reporting Pipelines" : "Report Automation", "Automation", 6, [
+            isTech ? "Build end-to-end: ingestion → analysis → report" : "Set up Zapier workflows for automated weekly reports",
+            isTech ? "Deploy reporting as a scheduled job or API" : "Create email report templates with AI-generated insights",
+            isTech ? "Implement cost tracking and performance monitoring" : "Automate data collection from multiple sources"
+        ], isTech ? ['openai_cookbook', 'helicone'] : ['zapier_ai', 'make_com'], time));
+        p.push(mkWk(8, "Capstone: Data Intelligence System", "Project", 7, [
+            "Define your capstone: an AI-powered data analysis system",
+            isTech ? "Build and deploy a custom analytics pipeline" : "Design your end-to-end AI data workflow",
+            "Run analysis on a real dataset and present insights",
+            "Document ROI: time saved and quality improvements"
+        ], ['openai_cookbook', 'langsmith'], time));
+        break;
 
-    // ── Week 1: Foundation (Universal) ──
-    plan.push(wk(1, "LLM Fundamentals & Ecosystem", "Foundation", 5,
-        ["Understand Transformer architecture at a high level",
-         "Compare frontier models: GPT-4o, Claude 3.5 Sonnet, Gemini 1.5 Pro",
-         "Set up accounts on OpenAI, Anthropic, and Google AI Studio",
-         "Explore system prompts and understand context windows"],
-        ['ms_ai', '3b1b_transformers', 'openai_docs'],
-        [],
-        ["Watch Andrej Karpathy's intro to backprop", "Read the 'Attention Is All You Need' abstract"]
-    ));
+    case 'Coding':
+        p.push(mkWk(2, "Prompt Engineering for Dev", "Prompting", 5, [
+            "Master code prompting: generate, explain, debug, refactor",
+            isTech ? "Build structured prompts for code generation with tests" : "Describe features in plain language for AI code generation",
+            "Practice iterative code refinement through conversations"
+        ], isTech ? ['openai_prompt', 'dl_prompt', 'anthropic_prompt'] : ['learn_prompting', 'prompt_patterns', 'chatgpt_guide'], time));
+        p.push(mkWk(3, isTech ? "AI-Powered IDE Setup" : "No-Code AI Development", "Dev Tools", 7, [
+            isTech ? "Set up Cursor with AI code completion and chat" : "Build a landing page with v0.dev from a description",
+            isTech ? "Configure GitHub Copilot for your primary language" : "Create a web app with Replit Agent from requirements",
+            isTech ? "Master inline generation, refactoring, and test writing" : "Deploy your first AI-built project to a public URL"
+        ], isTech ? ['cursor_docs', 'copilot_docs'] : ['v0_docs', 'replit'], time));
+        p.push(mkWk(4, isTech ? "Full-Stack AI-Assisted Building" : "Building Interfaces with AI", "Building", 8, [
+            isTech ? "Build a complete CRUD app using AI-assisted dev" : "Use v0.dev or Bolt to build multi-page interfaces",
+            isTech ? "Use AI to generate database schemas and API endpoints" : "Create forms, dashboards, and user flows with AI builders",
+            isTech ? "Implement auth and error handling with AI help" : "Connect no-code frontends to APIs using Zapier or Make"
+        ], isTech ? ['cursor_docs', 'copilot_docs'] : ['v0_docs', 'zapier_ai'], time));
+        p.push(mkWk(5, isTech ? "AI-Powered Testing & Debugging" : "Testing & Quality Assurance", "Testing", 6, [
+            isTech ? "Generate unit and integration tests with AI" : "Learn to test AI-built apps systematically",
+            isTech ? "Use AI for debugging: paste errors, get fix suggestions" : "Use AI chat to debug issues by describing behavior",
+            isTech ? "Build automated test suites for AI-generated code" : "Create testing checklists for your applications"
+        ], isTech ? ['cursor_docs', 'copilot_docs'] : ['replit', 'openai_docs'], time));
+        p.push(mkWk(6, isTech ? "API Development with AI" : "Integrations & Webhooks", "APIs", 7, [
+            isTech ? "Build RESTful APIs with AI-assisted endpoint design" : "Connect apps using Zapier webhooks and integrations",
+            isTech ? "Implement LLM-powered API features (search, summaries)" : "Set up automated workflows between multiple tools",
+            isTech ? "Add rate limiting, caching, and docs with AI help" : "Use Make.com for complex multi-step API workflows"
+        ], isTech ? ['openai_docs', 'openai_cookbook'] : ['zapier_ai', 'make_com'], time));
+        p.push(mkWk(7, isTech ? "Deployment & CI/CD" : "Publishing & Hosting", "Deployment", 6, [
+            isTech ? "Deploy to Vercel/Railway with AI-assisted config" : "Deploy your app using Replit or Vercel one-click deploy",
+            isTech ? "Set up CI/CD pipelines with AI-generated configs" : "Set up a custom domain and basic analytics",
+            isTech ? "Implement monitoring and error tracking" : "Create user documentation with AI assistance"
+        ], isTech ? ['cursor_docs', 'openai_cookbook'] : ['replit', 'v0_docs'], time));
+        p.push(mkWk(8, "Capstone: Ship a Tool", "Project", 8, [
+            "Define your capstone: a useful tool solving a real problem",
+            isTech ? "Build and deploy a polished AI-powered application" : "Build and publish a complete application using AI tools",
+            "Get feedback from at least 3 real users and iterate",
+            "Write a case study of your AI-assisted dev process"
+        ], ['openai_cookbook', 'langsmith'], time));
+        break;
 
-    // ── Week 2: Prompting ──
-    if (isTech) {
-        plan.push(wk(2, "Advanced Prompt Engineering", "Prompting", 6,
-            ["Implement few-shot and chain-of-thought prompting",
-             "Test structured JSON output extraction",
-             "Understand temperature, top_p, and max_tokens",
-             "Build a prompt template library in Markdown"],
-            ['openai_prompt', 'dl_prompt', 'anthropic_prompt'],
-            [],
-            ["Implement a self-consistency prompting experiment", "Compare outputs across 3 model providers on identical prompts"]
-        ));
-    } else {
-        plan.push(wk(2, "Mastering Prompting for Work", "Prompting", 5,
-            ["Learn role-playing and persona prompt frameworks",
-             "Build reusable prompt templates for your most common tasks",
-             "Test outputs with Claude, ChatGPT, and Gemini side-by-side"],
-            ['anthropic_prompt', 'dl_prompt', 'openai_prompt'],
-            [],
-            ["Create a personal prompt library document", "Identify 5 daily tasks you can partially automate with prompts"]
-        ));
+    case 'Ops':
+        p.push(mkWk(2, "Prompt Engineering for Ops", "Prompting", 5, [
+            "Master operational prompting: summarize, draft, extract action items",
+            isTech ? "Build prompt templates for status reports and docs" : "Create reusable templates for common operational comms",
+            "Practice structured output extraction for project tracking"
+        ], isTech ? ['openai_prompt', 'dl_prompt', 'anthropic_prompt'] : ['learn_prompting', 'prompt_patterns', 'ai_for_work'], time));
+        p.push(mkWk(3, isTech ? "Internal Tool Building" : "AI Meeting & Comms Tools", "Tools", 6, [
+            isTech ? "Build a Slack bot that summarizes channels/threads" : "Set up Otter.ai for automated meeting transcription",
+            isTech ? "Create an internal API for generating status reports" : "Use AI to auto-generate meeting agendas and action items",
+            isTech ? "Implement a document Q&A bot for team wikis" : "Create AI-powered email response templates"
+        ], isTech ? ['openai_docs', 'openai_cookbook'] : ['otter_ai', 'anthropic_prompt'], time));
+        p.push(mkWk(4, isTech ? "API Workflow Automation" : "Workflow Automation", "Automation", 7, [
+            isTech ? "Build automated pipelines for repetitive tasks" : "Set up Zapier workflows for team notifications",
+            isTech ? "Connect CRM, project mgmt, and communication APIs" : "Automate onboarding checklists and task assignments",
+            isTech ? "Implement error handling and alerting" : "Create multi-step approval workflows with Make.com"
+        ], isTech ? ['openai_docs', 'openai_cookbook'] : ['zapier_ai', 'make_com'], time));
+        p.push(mkWk(5, isTech ? "Team AI Infrastructure" : "Team AI Adoption", "Team", 6, [
+            isTech ? "Set up shared API keys with usage tracking and quotas" : "Draft a team AI acceptable use policy",
+            isTech ? "Build an internal prompt library for the team" : "Create an AI tools onboarding guide for your team",
+            isTech ? "Implement usage analytics and cost dashboards" : "Plan and run an AI tools lunch-and-learn session"
+        ], isTech ? ['helicone', 'openai_docs'] : ['zapier_ai', 'anthropic_docs'], time));
+        p.push(mkWk(6, isTech ? "Project Analytics with AI" : "AI for Project Management", "Analytics", 6, [
+            isTech ? "Build custom analytics dashboards with AI insights" : "Use AI to analyze timelines and identify risks",
+            isTech ? "Automate KPI tracking and anomaly detection" : "Set up AI-enhanced project status reporting",
+            isTech ? "Create predictive models for resource allocation" : "Use AI to draft stakeholder updates and exec summaries"
+        ], isTech ? ['plotly_docs', 'openai_cookbook'] : ['openai_docs', 'notion_ai'], time));
+        p.push(mkWk(7, isTech ? "Monitoring & Optimization" : "ROI Measurement & Optimization", "Ops", 6, [
+            isTech ? "Implement cost monitoring for all AI tool usage" : "Build an ROI measurement framework for AI workflows",
+            isTech ? "Optimize API calls with caching and prompt compression" : "Track time savings and productivity improvements",
+            isTech ? "Set up alerting for budget thresholds and errors" : "Create a quarterly AI impact report template"
+        ], isTech ? ['helicone', 'langsmith'] : ['zapier_ai', 'openai_docs'], time));
+        p.push(mkWk(8, "Capstone: Operations Playbook", "Project", 7, [
+            "Define your capstone: a complete AI ops playbook for your team",
+            isTech ? "Deploy all automated tools and document architecture" : "Compile all workflows, templates, and guides into a playbook",
+            "Measure and present ROI metrics to stakeholders",
+            "Plan next quarter's AI ops roadmap based on learnings"
+        ], ['openai_cookbook', 'langsmith'], time));
+        break;
+    }
+    return p;
+}
+
+// ═══════════════════════════════════════════════
+//  BUILD PATHS (12 weeks × 5 sub-goals)
+// ═══════════════════════════════════════════════
+function buildBuildRoadmap(time, subGoal, isTech) {
+    const p = [];
+    p.push(mkWk(1, "LLM Fundamentals & Architecture", "Foundation", 6, [
+        "Understand transformer architecture, tokens, and inference",
+        "Compare GPT-4o, Claude 3.5, Gemini 1.5 — strengths and pricing",
+        "Set up developer accounts on OpenAI, Anthropic, Google AI Studio",
+        isTech ? "Study API docs: authentication, rate limits, error handling" : "Explore no-code platforms: Botpress, Voiceflow, Custom GPTs"
+    ], isTech ? ['ms_ai', '3b1b_transformers', 'openai_docs'] : ['ai_for_everyone', 'dl_ai_everyone_genai', '3b1b_transformers', 'ibm_what_is_ai'], time));
+    p.push(mkWk(2, "Advanced Prompt Engineering", "Prompting", 6, [
+        "Master system prompts, few-shot learning, chain-of-thought",
+        isTech ? "Implement structured JSON output extraction" : "Create reusable prompt templates for your project type",
+        "Test temperature and top_p effects on output quality",
+        isTech ? "Build a prompt evaluation framework with test cases" : "Learn prompt chaining for complex multi-step tasks"
+    ], isTech ? ['openai_prompt', 'dl_prompt', 'anthropic_prompt'] : ['learn_prompting', 'prompt_patterns', 'chatgpt_guide'], time));
+
+    switch (subGoal) {
+    case 'Chatbot':
+        p.push(mkWk(3, isTech ? "Chat API & Backend" : "Chatbot Platform Setup", "Setup", 7, [
+            isTech ? "Build a Python chat API with OpenAI Chat Completions" : "Set up Botpress and create your first conversation flow",
+            isTech ? "Implement conversation history and context management" : "Design conversation trees with branching logic",
+            isTech ? "Add streaming responses and error handling" : "Configure bot personality, welcome msgs, fallbacks"
+        ], isTech ? ['openai_docs', 'openai_cookbook'] : ['botpress', 'voiceflow'], time));
+        p.push(mkWk(4, isTech ? "LangChain Chat Architecture" : "Advanced Conversation Design", "Architecture", 8, [
+            isTech ? "Set up LangChain with chat models and memory" : "Build multi-turn conversations with context awareness",
+            isTech ? "Implement conversation memory (buffer, summary, window)" : "Add conditional logic, variables, and data collection",
+            isTech ? "Build retrieval-augmented chat with document context" : "Integrate FAQ knowledge bases into your chatbot"
+        ], isTech ? ['langchain', 'dl_langchain'] : ['botpress', 'voiceflow'], time));
+        p.push(mkWk(5, isTech ? "Tool Use & Function Calling" : "Chatbot Integrations", "Tools", 8, [
+            isTech ? "Implement function calling for live data access" : "Connect chatbot to Sheets, CRM, or helpdesk via Zapier",
+            isTech ? "Build tools for search, calculations, and API lookups" : "Set up handoff-to-human workflows for complex queries",
+            isTech ? "Create an agent loop: reason → tool call → respond" : "Add email/SMS notifications for important conversations"
+        ], isTech ? ['openai_docs', 'anthropic_docs'] : ['zapier_ai', 'make_com'], time));
+        p.push(mkWk(6, isTech ? "RAG for Chat Context" : "Knowledge Base Integration", "RAG", 8, [
+            isTech ? "Set up embeddings and Chroma vector store" : "Upload documents and FAQs to your chatbot platform",
+            isTech ? "Implement chunking, retrieval, context injection" : "Fine-tune knowledge retrieval accuracy",
+            isTech ? "Evaluate retrieval quality and optimize strategy" : "Test with edge-case questions and improve responses"
+        ], isTech ? ['chroma_docs', 'pinecone', 'dl_rag'] : ['botpress', 'openai_docs'], time));
+        p.push(mkWk(7, isTech ? "Chat UI & Frontend" : "Chatbot UI & Channels", "UI", 7, [
+            isTech ? "Build a chat interface with React or vanilla JS" : "Customize chatbot widget appearance and branding",
+            isTech ? "Implement typing indicators, markdown, file upload" : "Deploy chatbot to website, WhatsApp, or Slack",
+            isTech ? "Add user auth and conversation persistence" : "Set up multi-channel deployment with unified analytics"
+        ], isTech ? ['openai_docs', 'openai_cookbook'] : ['botpress', 'voiceflow'], time));
+        p.push(mkWk(8, isTech ? "Testing & Evaluation" : "Analytics & Optimization", "Testing", 7, [
+            isTech ? "Build automated test suites for conversations" : "Set up conversation analytics and satisfaction tracking",
+            isTech ? "Implement LLM-as-a-judge for response quality" : "Analyze conversation logs to find improvement areas",
+            isTech ? "Set up LangSmith for tracing and debugging" : "A/B test different response strategies"
+        ], isTech ? ['langsmith', 'dl_evals'] : ['botpress', 'voiceflow'], time));
+        p.push(mkWk(9, isTech ? "Multi-Model & Fallbacks" : "Advanced Bot Features", "Advanced", 7, [
+            isTech ? "Implement model routing: fast for simple, powerful for complex" : "Add proactive messaging and user re-engagement",
+            isTech ? "Build fallback chains and graceful degradation" : "Implement appointment booking and form collection",
+            isTech ? "Optimize cost with prompt caching and model selection" : "Create bot personality variations for different uses"
+        ], isTech ? ['openai_docs', 'anthropic_docs', 'helicone'] : ['botpress', 'voiceflow', 'zapier_ai'], time));
+        p.push(mkWk(10, isTech ? "Deployment & Infrastructure" : "Launch Preparation", "Deployment", 7, [
+            isTech ? "Deploy chat backend with Docker or serverless" : "Conduct thorough user testing with real conversations",
+            isTech ? "Set up monitoring, logging, and cost alerts" : "Prepare launch materials: screenshots, demo, docs",
+            isTech ? "Implement auto-scaling and rate limiting" : "Set up ongoing monitoring and escalation procedures"
+        ], isTech ? ['helicone', 'openai_docs'] : ['botpress', 'zapier_ai'], time));
+        break;
+
+    case 'RAG':
+        p.push(mkWk(3, isTech ? "Embeddings & Vector Search" : "Document AI Foundations", "Embeddings", 7, [
+            isTech ? "Understand vector space, cosine similarity, semantic search" : "Explore Custom GPTs with document upload for Q&A",
+            isTech ? "Use OpenAI Embeddings API to encode text documents" : "Test Claude document analysis with different file types",
+            isTech ? "Set up Chroma and store/query your first embeddings" : "Compare Notion AI, ChatGPT, Claude for doc understanding"
+        ], isTech ? ['pinecone', 'chroma_docs'] : ['openai_docs', 'notion_ai'], time));
+        p.push(mkWk(4, isTech ? "Chunking & Data Pipeline" : "Knowledge Base Design", "Pipeline", 8, [
+            isTech ? "Implement recursive, semantic, and sentence chunking" : "Organize documents into clear categories and topics",
+            isTech ? "Build document loaders for PDF, Markdown, HTML, DOCX" : "Create a Custom GPT as a knowledge base assistant",
+            isTech ? "Process and embed a real corpus (100+ pages)" : "Upload and test retrieval across your full document set"
+        ], isTech ? ['langchain', 'llamaindex'] : ['openai_docs', 'notion_ai'], time));
+        p.push(mkWk(5, isTech ? "RAG Pipeline with LangChain" : "AI Knowledge Assistant", "RAG Core", 9, [
+            isTech ? "Build complete RAG: query → retrieve → augment → generate" : "Build a polished knowledge assistant with Custom GPTs",
+            isTech ? "Implement context window management for large retrievals" : "Create conversation starters and suggested questions",
+            isTech ? "Add source citation and reference tracking" : "Test with real users and refine system instructions"
+        ], isTech ? ['langchain', 'dl_rag', 'chroma_docs'] : ['openai_docs', 'anthropic_docs'], time));
+        p.push(mkWk(6, isTech ? "Advanced Retrieval Strategies" : "Multi-Source Knowledge", "Advanced RAG", 8, [
+            isTech ? "Implement hybrid search: BM25 + vector similarity" : "Connect multiple document sources to your KB",
+            isTech ? "Add metadata filtering and re-ranking" : "Set up automated doc ingestion via cloud storage",
+            isTech ? "Build query decomposition for multi-hop questions" : "Create specialized assistants for different departments"
+        ], isTech ? ['langchain', 'llamaindex', 'pinecone'] : ['openai_docs', 'zapier_ai'], time));
+        p.push(mkWk(7, isTech ? "RAG Evaluation & Quality" : "Quality & Accuracy", "Evaluation", 7, [
+            isTech ? "Implement RAGAS metrics: faithfulness, relevance, recall" : "Build a test question set and measure answer accuracy",
+            isTech ? "Build automated eval pipelines with golden test sets" : "Identify and fix common failure modes and hallucinations",
+            isTech ? "Optimize retrieval parameters based on eval results" : "Create a feedback mechanism for users to flag issues"
+        ], isTech ? ['langsmith', 'dl_evals'] : ['openai_docs', 'anthropic_docs'], time));
+        p.push(mkWk(8, isTech ? "Production Architecture" : "Scaling Your Knowledge Base", "Architecture", 8, [
+            isTech ? "Design production arch: managed vs self-hosted vector DB" : "Plan for growing document corpus and user groups",
+            isTech ? "Implement incremental indexing for document updates" : "Set up access controls and permission-based sharing",
+            isTech ? "Add observability with LangSmith tracing" : "Create admin workflows for document management"
+        ], isTech ? ['pinecone', 'langsmith'] : ['openai_docs', 'zapier_ai'], time));
+        p.push(mkWk(9, isTech ? "Search UI & User Experience" : "User Interface & Experience", "UI/UX", 7, [
+            isTech ? "Build a search/chat UI with source citations displayed" : "Design an intuitive interface for KB queries",
+            isTech ? "Implement streaming and document preview" : "Add source attribution and confidence indicators",
+            isTech ? "Add conversation history and follow-up suggestions" : "Create user guides and onboarding for the KB"
+        ], isTech ? ['openai_docs', 'openai_cookbook'] : ['botpress', 'openai_docs'], time));
+        p.push(mkWk(10, isTech ? "Deployment & Monitoring" : "Launch Preparation", "Deployment", 7, [
+            isTech ? "Deploy RAG system with Docker or serverless" : "Finalize content, test thoroughly, prepare materials",
+            isTech ? "Set up cost monitoring and auto-scaling" : "Create documentation and training for users",
+            isTech ? "Implement caching for frequent queries" : "Plan ongoing content updates and maintenance"
+        ], isTech ? ['helicone', 'openai_docs'] : ['zapier_ai', 'openai_docs'], time));
+        break;
+
+    case 'Agent':
+        p.push(mkWk(3, isTech ? "API Setup & Tool Calling" : "AI Agent Platforms", "Setup", 7, [
+            isTech ? "Set up Python with OpenAI function calling" : "Explore Zapier AI agents and multi-step automation",
+            isTech ? "Build tools for web search, calculations, file ops" : "Set up Make.com scenarios with conditional branching",
+            isTech ? "Implement the ReAct pattern: Reason → Act → Observe" : "Create a multi-step research agent in Zapier"
+        ], isTech ? ['openai_docs', 'react_paper'] : ['zapier_ai', 'make_com'], time));
+        p.push(mkWk(4, isTech ? "LangGraph Agent Architecture" : "Advanced Automation Flows", "Architecture", 9, [
+            isTech ? "Build a stateful agent graph with LangGraph" : "Design complex multi-step workflows with decision points",
+            isTech ? "Implement conditional edges and cyclic reasoning" : "Add error handling and retry logic to automations",
+            isTech ? "Add persistent memory with checkpointing" : "Connect 5+ tools in a single agentic workflow"
+        ], isTech ? ['langgraph', 'dl_agents'] : ['zapier_ai', 'make_com'], time));
+        p.push(mkWk(5, isTech ? "Tool Ecosystem & MCP" : "Agent Integrations", "Tools", 8, [
+            isTech ? "Study Model Context Protocol (MCP) architecture" : "Integrate agents with email, calendar, CRM, databases",
+            isTech ? "Build a custom MCP server for a local tool" : "Set up monitoring to track agent actions and outcomes",
+            isTech ? "Connect multiple MCP servers for rich tool env" : "Create human-approval checkpoints for critical actions"
+        ], isTech ? ['mcp_docs', 'langgraph'] : ['zapier_ai', 'make_com'], time));
+        p.push(mkWk(6, isTech ? "Multi-Agent Systems" : "Multi-Step Agent Workflows", "Multi-Agent", 9, [
+            isTech ? "Build a two-agent system: researcher + writer" : "Build content research → draft → review automation",
+            isTech ? "Implement agent handoffs and shared state" : "Create support → escalation → resolution flows",
+            isTech ? "Add supervisor agent for orchestration and QC" : "Design lead qualification → outreach → follow-up agents"
+        ], isTech ? ['langgraph', 'hf_agents'] : ['zapier_ai', 'make_com'], time));
+        p.push(mkWk(7, isTech ? "Agent Memory & Planning" : "Agent Knowledge & Context", "Memory", 7, [
+            isTech ? "Implement long-term memory with vector store" : "Set up shared data stores for context persistence",
+            isTech ? "Build planning: break down complex goals into steps" : "Create knowledge bases that agents can reference",
+            isTech ? "Add self-reflection and output verification loops" : "Implement logging and audit trails for agent decisions"
+        ], isTech ? ['langgraph', 'chroma_docs'] : ['zapier_ai', 'openai_docs'], time));
+        p.push(mkWk(8, isTech ? "Human-in-the-Loop & Safety" : "Agent Safety & Governance", "Safety", 7, [
+            isTech ? "Implement approval workflows for high-stakes actions" : "Define guardrails and limits for agent autonomy",
+            isTech ? "Build input validation and output verification" : "Set up notifications for actions requiring review",
+            isTech ? "Add cost controls and execution limits" : "Create an agent governance policy"
+        ], isTech ? ['langgraph', 'langsmith'] : ['zapier_ai', 'make_com'], time));
+        p.push(mkWk(9, isTech ? "Testing & Evaluation" : "Performance & Optimization", "Testing", 7, [
+            isTech ? "Build test suites for agent decision-making quality" : "Track agent success rates and identify failures",
+            isTech ? "Implement trajectory evaluation with LangSmith" : "Optimize workflows based on performance data",
+            isTech ? "Test adversarial inputs and edge cases" : "A/B test different agent strategies and compare"
+        ], isTech ? ['langsmith', 'dl_evals'] : ['zapier_ai', 'openai_docs'], time));
+        p.push(mkWk(10, isTech ? "Production Deployment" : "Launch Preparation", "Deployment", 7, [
+            isTech ? "Deploy agent system with monitoring and alerting" : "Finalize agent workflows and conduct thorough testing",
+            isTech ? "Implement observability: trace every agent step" : "Create documentation and runbooks for maintenance",
+            isTech ? "Set up cost tracking and budget alerts" : "Plan rollout strategy and user training"
+        ], isTech ? ['helicone', 'langsmith'] : ['zapier_ai', 'make_com'], time));
+        break;
+
+    case 'Creative':
+        p.push(mkWk(3, isTech ? "Image Generation APIs" : "AI Image Creation Tools", "Image Gen", 7, [
+            isTech ? "Set up Stability AI and DALL·E APIs" : "Master Midjourney prompting: styles, aspect ratios",
+            isTech ? "Implement text-to-image with prompt engineering" : "Explore DALL·E 3 in ChatGPT for iterative creation",
+            isTech ? "Build batch image generation with style consistency" : "Learn prompt techniques: composition, lighting, style"
+        ], isTech ? ['stability_ai', 'openai_docs'] : ['midjourney', 'openai_docs'], time));
+        p.push(mkWk(4, isTech ? "Image Editing & Control" : "Advanced Image Techniques", "Image Edit", 7, [
+            isTech ? "Implement inpainting, outpainting via API" : "Master image editing: variations, upscaling, style mixing",
+            isTech ? "Build ControlNet pipelines for structured generation" : "Create consistent character and brand imagery",
+            isTech ? "Automate image post-processing and format conversion" : "Build an organized AI-generated image asset library"
+        ], isTech ? ['stability_ai', 'replicate'] : ['midjourney', 'openai_docs'], time));
+        p.push(mkWk(5, isTech ? "Audio Generation & Voice AI" : "AI Voice & Audio", "Audio", 7, [
+            isTech ? "Integrate ElevenLabs API for text-to-speech" : "Use ElevenLabs to create custom voice narrations",
+            isTech ? "Build a voice cloning and narration pipeline" : "Create podcast episodes and voiceovers with AI",
+            isTech ? "Implement real-time voice processing and effects" : "Explore AI music generation tools (Suno, Udio)"
+        ], ['elevenlabs', 'openai_docs'], time));
+        p.push(mkWk(6, isTech ? "Video Generation & Processing" : "AI Video Creation", "Video", 8, [
+            isTech ? "Use Replicate API for video generation models" : "Create videos with Runway: text-to-video, image-to-video",
+            isTech ? "Build automated video processing pipelines" : "Edit and enhance footage with AI-powered tools",
+            isTech ? "Implement frame interpolation and upscaling" : "Create short-form content for social media with AI"
+        ], isTech ? ['replicate', 'runway'] : ['runway', 'openai_docs'], time));
+        p.push(mkWk(7, isTech ? "Multi-Modal Pipelines" : "Multi-Media Workflows", "Multi-Modal", 8, [
+            isTech ? "Build end-to-end: script → images → voiceover → video" : "Create complete multimedia projects across AI tools",
+            isTech ? "Implement asset management and version control" : "Build a content production workflow",
+            isTech ? "Orchestrate multiple AI services in one pipeline" : "Create templates for repeatable creative processes"
+        ], isTech ? ['openai_docs', 'replicate', 'elevenlabs'] : ['runway', 'elevenlabs', 'midjourney'], time));
+        p.push(mkWk(8, isTech ? "Style Control & Fine-Tuning" : "Brand Consistency & Style", "Style", 7, [
+            isTech ? "Explore LoRA fine-tuning for custom style models" : "Develop a brand-consistent AI style guide",
+            isTech ? "Train and deploy custom models on Replicate" : "Create mood boards and reference libraries",
+            isTech ? "Build a style-consistent generation system" : "Test consistency across different AI tools"
+        ], isTech ? ['replicate', 'lora_paper'] : ['midjourney', 'openai_docs'], time));
+        p.push(mkWk(9, isTech ? "Production & Deployment" : "Portfolio & Showcase", "Production", 7, [
+            isTech ? "Deploy creative tools as APIs or internal services" : "Curate a portfolio of AI-generated creative work",
+            isTech ? "Implement asset CDN, caching, cost optimization" : "Build a showcase website for your creative projects",
+            isTech ? "Set up monitoring and usage analytics" : "Document your creative process and tool combinations"
+        ], isTech ? ['helicone', 'openai_docs'] : ['v0_docs', 'openai_docs'], time));
+        p.push(mkWk(10, isTech ? "API & Integration" : "Client & Business Integration", "Integration", 7, [
+            isTech ? "Build public APIs for your creative tools" : "Create client-facing presentations of AI capabilities",
+            isTech ? "Implement webhook-based content generation" : "Set up automated content pipelines for regular delivery",
+            isTech ? "Add rate limiting, auth, and usage metering" : "Build pricing models for AI-assisted creative services"
+        ], isTech ? ['openai_docs', 'openai_cookbook'] : ['zapier_ai', 'make_com'], time));
+        break;
+
+    case 'Analytics':
+        p.push(mkWk(3, isTech ? "Python Data + AI Setup" : "AI Data Analysis Tools", "Setup", 7, [
+            isTech ? "Set up Python with pandas, OpenAI API, Jupyter" : "Master ChatGPT Code Interpreter for datasets",
+            isTech ? "Build NL-to-pandas query functions" : "Explore Google Sheets AI and Excel Copilot",
+            isTech ? "Implement AI-powered data profiling and EDA" : "Upload datasets and generate automated insights"
+        ], isTech ? ['openai_docs', 'kaggle_pandas'] : ['openai_docs', 'anthropic_docs'], time));
+        p.push(mkWk(4, isTech ? "Natural Language to SQL" : "BI Tool Integration", "NL-to-SQL", 8, [
+            isTech ? "Build NL-to-SQL engine with schema awareness" : "Set up AI-enhanced BI dashboards (Looker, Power BI)",
+            isTech ? "Implement query validation and error correction" : "Create interactive report templates with AI commentary",
+            isTech ? "Support complex queries: joins, aggregations" : "Connect multiple data sources for unified reporting"
+        ], isTech ? ['openai_docs', 'openai_cookbook'] : ['openai_docs', 'zapier_ai'], time));
+        p.push(mkWk(5, isTech ? "Interactive Visualization" : "AI-Powered Dashboards", "Visualization", 8, [
+            isTech ? "Build interactive Plotly dashboards from NL" : "Create dashboard mockups with AI-generated charts",
+            isTech ? "Generate chart recommendations based on data" : "Set up automated chart generation from spreadsheets",
+            isTech ? "Implement drill-down and filtering with AI narratives" : "Add AI-generated commentary and trend explanations"
+        ], isTech ? ['plotly_docs', 'openai_docs'] : ['openai_docs', 'anthropic_docs'], time));
+        p.push(mkWk(6, isTech ? "Automated Insights Engine" : "Automated Reporting", "Insights", 8, [
+            isTech ? "Build AI insights engine: anomalies, trends, patterns" : "Set up scheduled report generation with AI summaries",
+            isTech ? "Implement statistical analysis with LLM interpretation" : "Create email report workflows with Zapier",
+            isTech ? "Generate NL summaries of data changes" : "Build period-over-period comparison reports"
+        ], isTech ? ['openai_docs', 'langchain'] : ['zapier_ai', 'make_com'], time));
+        p.push(mkWk(7, isTech ? "RAG for Data Context" : "Knowledge-Enhanced Analytics", "Data RAG", 7, [
+            isTech ? "Build RAG pipeline over data docs and schemas" : "Create a data dictionary AI assistant",
+            isTech ? "Implement context-aware query generation" : "Set up automated data glossary and definition tools",
+            isTech ? "Add business rules and domain knowledge" : "Build a Q&A interface for non-technical stakeholders"
+        ], isTech ? ['langchain', 'chroma_docs'] : ['openai_docs', 'anthropic_docs'], time));
+        p.push(mkWk(8, isTech ? "Real-Time Data Pipelines" : "Data Automation Workflows", "Pipelines", 8, [
+            isTech ? "Build streaming data analysis with AI monitoring" : "Set up automated data collection from APIs",
+            isTech ? "Implement alerting for anomalies and thresholds" : "Create data transformation workflows with Make.com",
+            isTech ? "Add scheduled reporting and auto dashboard refresh" : "Build: collect → analyze → report → alert"
+        ], isTech ? ['openai_docs', 'openai_cookbook'] : ['zapier_ai', 'make_com'], time));
+        p.push(mkWk(9, isTech ? "Evaluation & Accuracy" : "Analytics Quality", "Evaluation", 7, [
+            isTech ? "Build SQL validation with golden test sets" : "Verify AI insights against manual analysis",
+            isTech ? "Implement accuracy tracking and regression testing" : "Create quality checklists for automated reports",
+            isTech ? "Set up LangSmith for query tracing" : "Build a feedback loop for report consumers"
+        ], isTech ? ['langsmith', 'dl_evals'] : ['openai_docs', 'anthropic_docs'], time));
+        p.push(mkWk(10, isTech ? "Production Deployment" : "Launch Preparation", "Deployment", 7, [
+            isTech ? "Deploy analytics tool with user auth" : "Finalize dashboards and reports for end users",
+            isTech ? "Set up API endpoints for dashboard embedding" : "Create user guides and training materials",
+            isTech ? "Implement caching, rate limiting, cost controls" : "Plan rollout and user onboarding strategy"
+        ], isTech ? ['helicone', 'openai_docs'] : ['zapier_ai', 'openai_docs'], time));
+        break;
     }
 
-    // ── Week 3 & 4: Divergence ──
-    if (isTech || isBuild) {
-        plan.push(wk(3, "API Integration & Dev Environment", "APIs", 8,
-            ["Set up Python virtual environment and API keys",
-             "Write first script to call OpenAI Chat Completions API",
-             "Implement streaming responses",
-             "Handle rate limits, retries, and API errors gracefully"],
-            ['openai_docs', 'openai_cookbook'],
-            [],
-            ["Write a CLI chatbot with conversation history", "Explore Anthropic and Gemini APIs with the same test prompts"]
-        ));
-        plan.push(wk(4, "Structured Outputs & Function Calling", "Tool Use", 9,
-            ["Define Pydantic/JSON schemas for strict model outputs",
-             "Implement function/tool calling with a real API (weather, search)",
-             "Build a simple agent loop: think → act → observe"],
-            ['openai_docs', 'anthropic_docs', 'openai_cookbook'],
-            [],
-            ["Implement parallel tool calls", "Create a multi-tool agent that can search + calculate"]
-        ));
-    } else if (isFounder) {
-        plan.push(wk(3, "AI Product Strategy & Economics", "Strategy", 6,
-            ["Map build vs. buy decisions for your use case",
-             "Understand token pricing and cost estimation for production",
-             "Identify your highest-ROI AI automation opportunities"],
-            ['openai_docs', 'anthropic_docs'],
-            [],
-            ["Build an AI cost calculator spreadsheet", "Interview 3 potential users about their AI pain points"]
-        ));
-        plan.push(wk(4, "No-Code AI Automation", "Automation", 5,
-            ["Set up Zapier or Make AI-powered workflows",
-             "Automate email drafting and triage pipeline",
-             "Connect CRM or Notion data to LLM summarization"],
-            ['zapier_ai', 'openai_prompt'],
-            [],
-            ["Publish your first automated workflow", "Measure time saved per week"]
-        ));
-    } else {
-        plan.push(wk(3, "AI Productivity & Knowledge Assistants", "Tools", 5,
-            ["Master Claude Projects with custom instructions",
-             "Use ChatGPT Advanced Data Analysis on a real dataset",
-             "Audit your existing workflow for AI insertion points"],
-            ['anthropic_prompt', 'anthropic_docs'],
-            [],
-            ["Create a personal AI knowledge base", "Set up Perplexity AI for research workflows"]
-        ));
-        plan.push(wk(4, "Workflow Automation for Professionals", "Automation", 5,
-            ["Automate meeting summaries using AI",
-             "Set up AI-assisted email drafting",
-             "Create standardized AI communication templates"],
-            ['zapier_ai', 'openai_prompt'],
-            [],
-            ["Build a personal knowledge capture workflow", "Automate your weekly status report draft"]
-        ));
+    // Shared capstone weeks for all Build paths
+    p.push(mkWk(p.length + 1, "Capstone: Build & Polish", "Project", 10, [
+        "Define target users and specific use cases",
+        isTech ? "Build the complete system end-to-end" : "Build and refine your project for the target use case",
+        "Test with at least 5 real users and incorporate feedback",
+        "Handle edge cases, errors, and adversarial inputs"
+    ], ['openai_cookbook', 'langsmith'], time));
+    p.push(mkWk(p.length + 1, "Launch, Measure & Iterate", "Launch", 6, [
+        "Deploy to production and announce to users",
+        "Track key metrics: quality, satisfaction, cost",
+        "Document architecture, prompts, and learnings",
+        "Plan v2 features based on user feedback and analytics"
+    ], ['langsmith', 'helicone'], time));
+
+    return p;
+}
+
+// ═══════════════════════════════════════════════
+//  CAREER PATHS (16–18 weeks × 4 sub-goals)
+// ═══════════════════════════════════════════════
+function buildCareerRoadmap(time, subGoal, isTech) {
+    const p = [];
+    let n = 1;
+
+    // Non-tech backgrounds get 2 extra Python foundation weeks
+    if (!isTech) {
+        p.push(mkWk(n++, "Python Foundations", "Python", 6, [
+            "Install Python and set up VS Code with Python extensions",
+            "Learn core syntax: variables, loops, functions, data structures",
+            "Practice with 10 coding exercises on LeetCode or HackerRank",
+            "Build a simple CLI application (calculator or to-do list)"
+        ], ['kaggle_pandas', 'replit'], time));
+        p.push(mkWk(n++, "Python for Data & APIs", "Python", 7, [
+            "Learn pandas for data manipulation and CSV processing",
+            "Make HTTP requests with the requests library",
+            "Parse JSON responses and work with API data",
+            "Build a script that fetches data from a public API"
+        ], ['kaggle_pandas', 'openai_docs'], time));
     }
 
-    // ── Week 5 & 6: RAG ──
-    plan.push(wk(5, "Embeddings & Vector Search Concepts", "RAG", 7,
-        ["Understand vector space, cosine similarity, and semantic search",
-         "Use OpenAI Embeddings API to encode text",
-         "Calculate similarity between documents manually",
-         "Explore Chroma or Pinecone for vector storage"],
-        ['pinecone', 'chroma_docs', 'llamaindex'],
-        [],
-        ["Build a semantic search over your own notes", "Read the RAG paper abstract and architecture section"]
-    ));
+    // Shared foundation
+    p.push(mkWk(n++, "LLM Fundamentals & AI Landscape", "Foundation", 6, [
+        "Understand transformer architecture, attention, tokens",
+        "Compare GPT-4o, Claude 3.5, Gemini, Llama 3",
+        "Study AI industry landscape: companies, roles, market",
+        "Set up accounts on OpenAI, Anthropic, Hugging Face"
+    ], isTech ? ['ms_ai', '3b1b_transformers', 'openai_docs'] : ['ai_for_everyone', 'tina_huang', '3b1b_transformers', 'ai_career_guide'], time));
+    p.push(mkWk(n++, "Advanced Prompt Engineering", "Prompting", 6, [
+        "Master few-shot, chain-of-thought, tree-of-thought",
+        "Implement structured JSON output and function calling",
+        "Build a prompt evaluation framework with test cases",
+        "Study OpenAI and Anthropic prompt engineering guides"
+    ], isTech ? ['openai_prompt', 'dl_prompt', 'anthropic_prompt'] : ['learn_prompting', 'prompt_patterns', 'dl_ai_everyone_genai'], time));
 
-    if (isTech || isBuild) {
-        plan.push(wk(6, "Building Production RAG Pipelines", "RAG", 10,
-            ["Implement chunking strategies (recursive, semantic)",
-             "Store and query embeddings with Chroma locally",
-             "Build retrieval context injection with LlamaIndex",
-             "Evaluate retrieval quality with precision@k"],
-            ['langchain', 'llamaindex', 'dl_rag', 'chroma_docs'],
-            [],
-            ["Implement a hybrid BM25 + vector search", "Add metadata filtering to your retrieval pipeline"]
-        ));
-    } else {
-        plan.push(wk(6, "RAG via Custom GPTs & Knowledge Bases", "RAG", 5,
-            ["Create a Custom GPT with uploaded documents",
-             "Test Claude's document analysis capabilities",
-             "Understand context window limits and chunking consequences"],
-            ['openai_docs', 'anthropic_docs'],
-            [],
-            ["Build a FAQ bot from your company documentation", "Test with adversarial questions to find failure modes"]
-        ));
+    switch (subGoal) {
+    case 'ML_Eng':
+        p.push(mkWk(n++, "Mathematics for ML", "Math", 8, [
+            "Review linear algebra: vectors, matrices, eigendecomposition",
+            "Study calculus: gradients, partial derivatives, chain rule",
+            "Understand probability: Bayes' theorem, distributions",
+            "Implement gradient descent from scratch in Python"
+        ], ['andrej_zero2hero', 'fastai'], time));
+        p.push(mkWk(n++, "Classical Machine Learning", "ML", 8, [
+            "Implement linear/logistic regression and decision trees",
+            "Understand train/test splits, cross-validation, overfitting",
+            "Practice with scikit-learn on Kaggle datasets",
+            "Build an end-to-end ML pipeline: data → features → model → eval"
+        ], ['kaggle_intro', 'aidungeon_ml'], time));
+        p.push(mkWk(n++, "Deep Learning Fundamentals", "Deep Learning", 9, [
+            "Understand neural networks: layers, activations, loss functions",
+            "Build a neural network from scratch with NumPy",
+            "Learn PyTorch: tensors, autograd, nn.Module, training loops",
+            "Train a CNN on MNIST/CIFAR-10 and evaluate results"
+        ], ['andrej_zero2hero', 'fastai'], time));
+        p.push(mkWk(n++, "Transformers & NLP", "Transformers", 9, [
+            "Read and understand 'Attention Is All You Need'",
+            "Implement a simple attention mechanism from scratch",
+            "Use Hugging Face Transformers for text classification",
+            "Fine-tune a pre-trained model on a custom dataset"
+        ], ['attention_paper', 'hf_nlp', '3b1b_transformers'], time));
+        p.push(mkWk(n++, "LLM Application Development", "LLM Apps", 8, [
+            "Build a RAG pipeline with LangChain and vector stores",
+            "Implement an agentic workflow with LangGraph",
+            "Master function calling and tool use across providers",
+            "Build a full-stack LLM application with a web UI"
+        ], ['langchain', 'langgraph', 'dl_langchain'], time));
+        p.push(mkWk(n++, "Fine-Tuning & Customization", "Fine-Tuning", 9, [
+            "Understand when to fine-tune vs RAG vs prompt eng",
+            "Prepare a fine-tuning dataset with proper formatting",
+            "Fine-tune GPT-3.5/4 via OpenAI API on domain data",
+            "Explore LoRA and QLoRA for efficient fine-tuning"
+        ], ['dl_finetuning', 'lora_paper', 'hf_nlp'], time));
+        p.push(mkWk(n++, "Open-Source Models & Local Inference", "Open Source", 8, [
+            "Set up Ollama and run Llama 3, Mistral locally",
+            "Explore Hugging Face model hub: search, download, compare",
+            "Benchmark local vs API models on quality and speed",
+            "Implement model serving with vLLM or TGI"
+        ], ['hf_nlp', 'andrej_zero2hero'], time));
+        p.push(mkWk(n++, "MLOps & Production Deployment", "MLOps", 8, [
+            "Learn Docker for containerizing ML applications",
+            "Set up CI/CD pipelines for model deployment",
+            "Implement experiment tracking with Weights & Biases",
+            "Deploy a model with monitoring and A/B testing"
+        ], ['weights_biases', 'helicone'], time));
+        p.push(mkWk(n++, "Cloud AI Platforms", "Cloud", 7, [
+            "Explore AWS Bedrock, Azure OpenAI, Google Vertex AI",
+            "Deploy an application on one cloud platform end-to-end",
+            "Understand managed vs self-hosted AI infrastructure",
+            "Study cost optimization strategies for production AI"
+        ], ['aws_bedrock', 'gcp_vertex', 'azure_openai'], time));
+        p.push(mkWk(n++, "Portfolio Project", "Portfolio", 10, [
+            "Design an impressive portfolio project with ML components",
+            "Build end-to-end: data pipeline → model → API → frontend",
+            "Deploy with monitoring, logging, and documentation",
+            "Create a compelling README and demo video"
+        ], ['openai_cookbook', 'langsmith'], time));
+        p.push(mkWk(n++, "Job Preparation & Launch", "Career", 6, [
+            "Polish GitHub profile and project READMEs",
+            "Prepare for ML system design and coding interviews",
+            "Write technical blog posts about your projects",
+            "Network: attend AI meetups, contribute to open-source"
+        ], ['arxiv_sanity', 'aidungeon_ml'], time));
+        break;
+
+    case 'Product':
+        p.push(mkWk(n++, "AI Product Strategy", "Strategy", 6, [
+            "Study AI product cases: Notion AI, Copilot, Jasper",
+            "Understand build vs buy decisions for AI features",
+            "Map the AI product landscape: tools, platforms, APIs",
+            "Define user personas and JTBD for AI products"
+        ], ['openai_docs', 'anthropic_docs'], time));
+        p.push(mkWk(n++, "Prompt Engineering Mastery", "Prompting", 7, [
+            "Deep dive into advanced prompting techniques",
+            "Build and maintain a comprehensive prompt library",
+            "Implement A/B testing frameworks for prompts",
+            "Study token economics and cost optimization"
+        ], ['openai_prompt', 'anthropic_prompt', 'dl_prompt'], time));
+        p.push(mkWk(n++, "AI UX Design Principles", "UX", 7, [
+            "Study AI interaction patterns: autocomplete, chat, copilot",
+            "Design for uncertainty: confidence, fallbacks, explanations",
+            "Create wireframes for an AI-powered product feature",
+            "Conduct user research on AI feature expectations"
+        ], ['openai_docs', 'anthropic_docs'], time));
+        p.push(mkWk(n++, "LLM Capabilities & Limitations", "Technical", 7, [
+            "Understand RAG, fine-tuning, embeddings conceptually",
+            "Learn to evaluate LLM outputs: accuracy, latency, cost",
+            "Study failure modes: hallucination, injection, bias",
+            "Build technical specs that engineering can implement"
+        ], ['dl_rag', 'langchain', 'openai_cookbook'], time));
+        p.push(mkWk(n++, "Evaluation & Quality Systems", "Evaluation", 7, [
+            "Design evaluation frameworks for AI product quality",
+            "Implement human eval workflows with clear rubrics",
+            "Build automated eval with LLM-as-a-judge",
+            "Define SLAs: latency, accuracy, availability targets"
+        ], ['langsmith', 'dl_evals', 'helicone'], time));
+        p.push(mkWk(n++, "AI Metrics & Analytics", "Analytics", 6, [
+            "Define AI metrics: task success, user trust, adoption",
+            "Build dashboards for AI feature performance",
+            "Study A/B testing methodologies for AI features",
+            "Learn to measure ROI of AI product investments"
+        ], ['helicone', 'langsmith'], time));
+        p.push(mkWk(n++, "Ethics, Safety & Governance", "Safety", 6, [
+            "Study AI safety frameworks: EU AI Act, NIST AI RMF",
+            "Design responsible AI guidelines for products",
+            "Implement content moderation and safety filters",
+            "Create incident response plans for AI failures"
+        ], ['openai_docs', 'anthropic_docs'], time));
+        p.push(mkWk(n++, "Vendor Management & AI Stack", "Vendor", 6, [
+            "Evaluate API providers on quality, cost, reliability",
+            "Build multi-model strategies with fallback chains",
+            "Understand SLAs, data privacy, compliance requirements",
+            "Create a vendor evaluation framework"
+        ], ['openai_docs', 'anthropic_docs', 'gemini_docs'], time));
+        p.push(mkWk(n++, "AI Product Roadmapping", "Roadmap", 6, [
+            "Build a 12-month AI product roadmap with phased rollout",
+            "Prioritize using impact vs feasibility frameworks",
+            "Create go-to-market strategies for AI products",
+            "Design pilot programs and beta testing approaches"
+        ], ['openai_docs', 'anthropic_docs'], time));
+        p.push(mkWk(n++, "Portfolio: AI Product Case Study", "Portfolio", 8, [
+            "Build a comprehensive AI product case study",
+            "Create product specs, wireframes, eval frameworks",
+            "Document your AI product thinking process",
+            "Build a portfolio website showcasing your work"
+        ], ['v0_docs', 'openai_docs'], time));
+        p.push(mkWk(n++, "Job Preparation & Networking", "Career", 6, [
+            "Polish AI product portfolio and LinkedIn profile",
+            "Prepare for AI product manager interview questions",
+            "Write thought leadership about AI product strategy",
+            "Network with AI product leaders and communities"
+        ], ['arxiv_sanity'], time));
+        break;
+
+    case 'DataSci':
+        p.push(mkWk(n++, "Statistics & Probability", "Statistics", 8, [
+            "Review descriptive stats, distributions, hypothesis testing",
+            "Implement t-test, chi-square, ANOVA in Python",
+            "Understand Bayesian thinking and conditional probability",
+            "Complete Kaggle's Intro to Statistics exercises"
+        ], ['kaggle_intro', 'kaggle_pandas'], time));
+        p.push(mkWk(n++, "Classical Machine Learning", "ML", 8, [
+            "Implement supervised: regression, classification, ensemble",
+            "Master scikit-learn pipelines: preprocessing, training, eval",
+            "Understand unsupervised: clustering, PCA, anomaly detection",
+            "Build an end-to-end ML project on a Kaggle dataset"
+        ], ['kaggle_intro', 'aidungeon_ml'], time));
+        p.push(mkWk(n++, "Feature Engineering & Wrangling", "Features", 7, [
+            "Master pandas for complex data transformations",
+            "Learn feature engineering: encoding, scaling, creation",
+            "Handle missing data, outliers, imbalanced datasets",
+            "Build automated feature engineering pipelines"
+        ], ['kaggle_pandas', 'aidungeon_ml'], time));
+        p.push(mkWk(n++, "NLP & Text Analytics", "NLP", 8, [
+            "Implement text preprocessing: tokenization, embeddings, TF-IDF",
+            "Build sentiment analysis and text classification models",
+            "Use Hugging Face transformers for NLP tasks",
+            "Compare traditional NLP vs LLM-based approaches"
+        ], ['hf_nlp', 'langchain'], time));
+        p.push(mkWk(n++, "LLMs for Data Science", "LLM + DS", 8, [
+            "Use LLMs for automated EDA and hypothesis generation",
+            "Build NL-to-SQL/pandas query translators",
+            "Implement AI-powered data storytelling and reports",
+            "Create LLM-assisted feature engineering workflows"
+        ], ['openai_docs', 'langchain', 'openai_cookbook'], time));
+        p.push(mkWk(n++, "Deep Learning for DS", "Deep Learning", 8, [
+            "Build neural nets with PyTorch for tabular and text",
+            "Implement transfer learning for limited-data scenarios",
+            "Train custom embeddings for domain similarity search",
+            "Compare deep learning vs traditional ML"
+        ], ['fastai', 'andrej_zero2hero'], time));
+        p.push(mkWk(n++, "Experiment Tracking & MLOps", "MLOps", 7, [
+            "Set up Weights & Biases for experiment tracking",
+            "Build reproducible ML pipelines with version control",
+            "Learn model versioning and deployment strategies",
+            "Implement automated retraining and monitoring"
+        ], ['weights_biases', 'aidungeon_ml'], time));
+        p.push(mkWk(n++, "Kaggle Competition Practice", "Competition", 8, [
+            "Enter a Kaggle competition and submit predictions",
+            "Study winning solutions and learn advanced techniques",
+            "Implement ensemble methods and model stacking",
+            "Achieve a top 25% ranking on at least one competition"
+        ], ['kaggle_intro', 'kaggle_pandas'], time));
+        p.push(mkWk(n++, "Portfolio Project", "Portfolio", 10, [
+            "Design a portfolio project with real business impact",
+            "Build: data → analysis → model → insights → presentation",
+            "Create compelling visualizations and narrative",
+            "Write a detailed blog post with methodology and results"
+        ], ['plotly_docs', 'openai_cookbook'], time));
+        p.push(mkWk(n++, "Job Preparation & Launch", "Career", 6, [
+            "Build a data science portfolio website",
+            "Prepare for DS interviews: SQL, stats, ML, case studies",
+            "Practice with take-home data challenges",
+            "Network: join DS communities, open-source contributions"
+        ], ['kaggle_intro', 'arxiv_sanity'], time));
+        break;
+
+    case 'Architect':
+        p.push(mkWk(n++, "Cloud AI Services Overview", "Cloud AI", 7, [
+            "Map AWS Bedrock, Azure OpenAI, Google Vertex AI",
+            "Understand managed vs self-hosted AI infrastructure",
+            "Compare pricing, performance, SLAs across providers",
+            "Set up accounts and run initial tests on each platform"
+        ], ['aws_bedrock', 'gcp_vertex', 'azure_openai'], time));
+        p.push(mkWk(n++, "RAG Architecture Deep Dive", "RAG", 8, [
+            "Design production RAG architectures for enterprise",
+            "Evaluate vector DBs: Pinecone, Weaviate, Chroma, pgvector",
+            "Implement chunking strategies and embedding pipelines",
+            "Build a reference RAG architecture with observability"
+        ], ['pinecone', 'chroma_docs', 'langchain'], time));
+        p.push(mkWk(n++, "Agent Architecture Patterns", "Agents", 8, [
+            "Study agent architectures: single, multi-agent, supervisor",
+            "Design MCP-based tool ecosystems for enterprise",
+            "Implement stateful agent workflows with LangGraph",
+            "Build a reference agent architecture with safety"
+        ], ['langgraph', 'mcp_docs', 'dl_agents'], time));
+        p.push(mkWk(n++, "AI Security & Compliance", "Security", 7, [
+            "Study AI threats: prompt injection, data extraction",
+            "Implement input validation, output filtering, guardrails",
+            "Design data privacy: PII handling, data residency",
+            "Understand compliance: SOC2, HIPAA, GDPR for AI"
+        ], ['openai_docs', 'anthropic_docs'], time));
+        p.push(mkWk(n++, "MLOps & Model Lifecycle", "MLOps", 8, [
+            "Design CI/CD pipelines for ML and LLM applications",
+            "Implement model versioning, A/B testing, canary deploys",
+            "Set up monitoring: drift, data quality, performance",
+            "Build automated evaluation and rollback procedures"
+        ], ['weights_biases', 'langsmith', 'helicone'], time));
+        p.push(mkWk(n++, "Cost Optimization & Scaling", "Cost", 7, [
+            "Design cost-efficient architectures: routing, caching, batching",
+            "Implement prompt caching and semantic caching",
+            "Build auto-scaling patterns for variable AI workloads",
+            "Create cost models and forecasting tools"
+        ], ['helicone', 'openai_docs'], time));
+        p.push(mkWk(n++, "Enterprise Integration", "Integration", 7, [
+            "Design AI integration patterns for enterprise systems",
+            "Build API gateway configs for AI service management",
+            "Implement multi-model strategies with fallback/routing",
+            "Design event-driven architectures for AI workflows"
+        ], ['openai_docs', 'aws_bedrock', 'azure_openai'], time));
+        p.push(mkWk(n++, "Fine-Tuning & Custom Models", "Customization", 7, [
+            "Understand when to fine-tune vs RAG vs prompting",
+            "Design fine-tuning data pipelines and QA",
+            "Explore LoRA, QLoRA, and efficient fine-tuning",
+            "Plan model evaluation and deployment"
+        ], ['dl_finetuning', 'lora_paper', 'hf_nlp'], time));
+        p.push(mkWk(n++, "AI Platform Architecture", "Platform", 8, [
+            "Design an internal AI platform for your org",
+            "Build shared services: prompt mgmt, eval, observability",
+            "Create self-service AI tools for non-technical teams",
+            "Design governance and access control for AI resources"
+        ], ['langsmith', 'helicone', 'openai_docs'], time));
+        p.push(mkWk(n++, "Certifications & Portfolio", "Certs", 6, [
+            "Prepare for AWS AI Practitioner or Azure AI Engineer cert",
+            "Build a portfolio of architecture diagrams and designs",
+            "Write architecture decision records (ADRs) for AI",
+            "Create a reference architecture document"
+        ], ['aws_bedrock', 'azure_openai', 'gcp_vertex'], time));
+        p.push(mkWk(n++, "Portfolio: Architecture Project", "Portfolio", 8, [
+            "Design a complete enterprise AI architecture",
+            "Build a proof-of-concept demonstrating your design",
+            "Document: diagrams, cost models, security review",
+            "Present to peers and incorporate feedback"
+        ], ['openai_cookbook', 'langsmith'], time));
+        p.push(mkWk(n++, "Job Preparation & Launch", "Career", 6, [
+            "Polish your AI solutions architecture portfolio",
+            "Prepare for system design interviews with AI focus",
+            "Write technical blog posts about AI architecture",
+            "Network with AI engineering leaders"
+        ], ['arxiv_sanity'], time));
+        break;
     }
-
-    // ── Week 7 & 8: Agents ──
-    plan.push(wk(7, "Intro to Agentic AI Workflows", "Agents", 7,
-        ["Understand the agent loop: Plan → Act → Observe → Repeat",
-         "Study the ReAct prompting framework",
-         "Explore LangGraph for stateful agent graphs",
-         "Map out a sequential agentic workflow on paper"],
-        ['langchain', 'langgraph', 'react_paper'],
-        [],
-        ["Build a simple ReAct agent from scratch with no framework", "Watch the LangGraph intro videos"]
-    ));
-
-    if (isTech || isBuild) {
-        plan.push(wk(8, "Multi-Agent Systems & MCP", "Agents", 10,
-            ["Study Model Context Protocol (MCP) server architecture",
-             "Build a basic two-agent conversation with LangGraph",
-             "Implement persistent memory with a vector store",
-             "Add human-in-the-loop approval steps"],
-            ['mcp_docs', 'langgraph', 'dl_agents', 'hf_agents'],
-            [],
-            ["Deploy an MCP server for a local tool", "Build a research agent that searches the web and summarizes"]
-        ));
-    } else {
-        plan.push(wk(8, "Practical AI Agents for Non-Coders", "Agents", 6,
-            ["Use multi-step prompting to simulate agent behavior",
-             "Set up a complex sequential automation in Zapier",
-             "Review enterprise agent case studies (Salesforce Einstein, etc.)"],
-            ['zapier_ai', 'anthropic_prompt'],
-            [],
-            ["Build an automated research report pipeline", "Create a multi-step customer support flow"]
-        ));
-    }
-
-    // ── Week 9: Ops / Career ──
-    if (isTech || isBuild) {
-        plan.push(wk(9, "Evaluation & LLM Production Ops", "Ops", 8,
-            ["Implement LLM-as-a-judge evaluation framework",
-             "Set up LangSmith or Helicone for tracing and logging",
-             "Handle prompt injection and adversarial inputs",
-             "Define SLOs: latency p95, cost per query"],
-            ['dl_evals', 'langsmith', 'helicone'],
-            [],
-            ["Build an automated regression test suite for prompts", "Set up cost alerts for your API usage"]
-        ));
-    } else if (goal === 'Career') {
-        plan.push(wk(9, "AI Career Landscape & Portfolio Building", "Career", 6,
-            ["Map AI product manager, analyst, and prompt engineer roles",
-             "Audit and update your resume for AI keywords",
-             "Begin building a public project on GitHub",
-             "Start contributing to open-source AI documentation"],
-            ['kaggle_intro', 'aidungeon_ml', 'arxiv_sanity'],
-            [],
-            ["Publish a LinkedIn article about your AI learning journey", "Create a Kaggle competition submission"]
-        ));
-    } else {
-        plan.push(wk(9, "AI Change Management & ROI Measurement", "Business", 5,
-            ["Draft a company AI acceptable use policy",
-             "Plan team onboarding for new AI tools",
-             "Build an ROI measurement framework for AI workflows",
-             "Review AI governance frameworks (EU AI Act overview)"],
-            ['zapier_ai'],
-            [],
-            ["Present AI ROI findings to stakeholders", "Run a lunch-and-learn on your AI tools"]
-        ));
-    }
-
-    // ── Week 10 & 11: Capstone ──
-    plan.push(wk(10, "Capstone: Scope & Architecture", "Project", 8,
-        ["Define project problem statement and target user persona",
-         "Wireframe the core application or workflow",
-         "Choose your tech stack and gather data sources",
-         "Write a project README with goals and success metrics"],
-        ['fastai'],
-        [],
-        ["Create a detailed technical specification document", "Set up CI/CD pipeline for the project"]
-    ));
-    plan.push(wk(11, "Capstone: Build & Iterate", "Project", 12,
-        ["Implement core logic and LLM integration",
-         "Iterate on prompt quality using real test cases",
-         "Handle edge cases, errors, and failure modes",
-         "Get feedback from at least 3 real users"],
-        ['openai_cookbook', 'langsmith'],
-        [],
-        ["Write unit tests for critical paths", "Deploy to a public URL (Vercel, Railway, Hugging Face Spaces)"]
-    ));
-
-    // ── Week 12: Advanced / Future ──
-    if (isTech || isBuild) {
-        plan.push(wk(12, "Fine-Tuning & Open-Source Models", "Advanced", 8,
-            ["Understand when to fine-tune vs. RAG vs. prompt engineering",
-             "Run a local model with Ollama (Llama 3, Mistral)",
-             "Explore Hugging Face model hub and datasets",
-             "Try basic fine-tuning with the HF Trainer API"],
-            ['hf_nlp', 'dl_finetuning', 'andrej_zero2hero'],
-            [],
-            ["Fine-tune a small model on domain-specific data", "Benchmark local vs. API model quality and cost"]
-        ));
-    } else {
-        plan.push(wk(12, "Staying Updated & Emerging AI Trends", "Trends", 4,
-            ["Set up your AI information diet (newsletters, podcasts)",
-             "Explore multimodal AI: image, audio, and video generation",
-             "Review OpenAI, Anthropic, and Google's 2025 roadmaps"],
-            ['openai_docs', 'anthropic_docs'],
-            [],
-            ["Subscribe to: The Batch, Lenny's Newsletter, One Useful Thing", "Experiment with Sora, Runway, or ElevenLabs"]
-        ));
-    }
-
-    // ── Week 13: Review & Next Steps ──
-    plan.push(wk(13, "Review, Launch & Define Next 90 Days", "Review", 5,
-        ["Finalize and polish the capstone project",
-         "Publish project publicly (GitHub + blog post)",
-         "Reflect: what worked, what to improve",
-         "Define your next 90-day AI learning trajectory"],
-        [],
-        [],
-        ["Record a demo video of your project", "Write a detailed retrospective for your portfolio"]
-    ));
-
-    return plan;
+    return p;
 }
 
 // ─────────────────────────────────────────────
 //  RENDERING
 // ─────────────────────────────────────────────
 function loadApp() {
+    document.getElementById('onboarding').style.display = 'none';
     document.getElementById('app').style.display = 'grid';
 
-    // Profile summary label
     const bgMap   = { Student: '🎓 Student', 'Non-Tech': '💼 Non-Tech Pro', Tech: '💻 Tech Pro', Founder: '🚀 Founder' };
     const timeMap = { '30m': '30 min/day', '1h': '1 hr/day', '2h': '2+ hrs/day' };
     const goalMap = { Work: 'Use AI at Work', Build: 'Build with AI', Career: 'Career Switch' };
+    const subMap  = {
+        Writing:'Writing & Content', Data:'Data & Research', Coding:'Software Dev', Ops:'Ops & Mgmt',
+        Chatbot:'Chatbot', RAG:'RAG/KB', Agent:'AI Agent', Creative:'Creative AI', Analytics:'Analytics',
+        ML_Eng:'ML/AI Eng', Product:'AI Product', DataSci:'Data Scientist', Architect:'Solutions Arch'
+    };
     document.getElementById('profile-summary').textContent =
-        `${bgMap[state.profile.bg] || state.profile.bg} · ${timeMap[state.profile.time]} · ${goalMap[state.profile.goal]}`;
+        `${bgMap[state.profile.bg] || state.profile.bg} · ${timeMap[state.profile.time]} · ${goalMap[state.profile.goal]} → ${subMap[state.profile.subGoal] || state.profile.subGoal}`;
 
     const roadmapData = buildCurriculum();
+    const toolbarTitle = document.querySelector('.toolbar-title');
+    if (toolbarTitle) toolbarTitle.textContent = `${roadmapData.length}-Week Curriculum`;
     renderSkillTree(roadmapData);
     renderRoadmap(roadmapData);
     updateDashboard(roadmapData);
@@ -1138,18 +1795,47 @@ function renderRoadmap(data) {
         // Resources HTML
         let resourcesHtml = '';
         if (week.resources && week.resources.length > 0) {
+            const formatIcons = { video: '🎬', article: '📖', interactive: '🎮', tool: '🛠️', docs: '📄', course: '🎓', paper: '📑' };
+            const difficultyLabels = { beginner: '🟢 Beginner', intermediate: '🟡 Intermediate', advanced: '🔴 Advanced' };
+
+            const filterBarHtml = `
+                <div class="resource-filters" data-week="${week.id}">
+                    <div class="filter-group">
+                        <span class="filter-label">Level</span>
+                        <button class="filter-btn active" onclick="filterResources('${week.id}', 'difficulty', 'all', this)">All</button>
+                        <button class="filter-btn" onclick="filterResources('${week.id}', 'difficulty', 'beginner', this)">🟢 Beginner</button>
+                        <button class="filter-btn" onclick="filterResources('${week.id}', 'difficulty', 'intermediate', this)">🟡 Intermediate</button>
+                        <button class="filter-btn" onclick="filterResources('${week.id}', 'difficulty', 'advanced', this)">🔴 Advanced</button>
+                    </div>
+                    <div class="filter-separator"></div>
+                    <div class="filter-group">
+                        <span class="filter-label">Format</span>
+                        <button class="filter-btn active" onclick="filterResources('${week.id}', 'format', 'all', this)">All</button>
+                        <button class="filter-btn" onclick="filterResources('${week.id}', 'format', 'video', this)">🎬 Video</button>
+                        <button class="filter-btn" onclick="filterResources('${week.id}', 'format', 'course', this)">🎓 Course</button>
+                        <button class="filter-btn" onclick="filterResources('${week.id}', 'format', 'article', this)">📖 Article</button>
+                        <button class="filter-btn" onclick="filterResources('${week.id}', 'format', 'tool', this)">🛠️ Tool</button>
+                    </div>
+                </div>`;
+
             resourcesHtml = `
                 <div style="margin-top: 1.5rem;">
                     <div class="section-label">📚 Learning Resources</div>
-                    <div class="resource-list">
+                    ${filterBarHtml}
+                    <div class="resource-list" id="resources-${week.id}">
                         ${week.resources.map(r => `
-                            <a href="${r.url}" target="_blank" rel="noopener noreferrer" class="resource-card">
+                            <a href="${r.url}" target="_blank" rel="noopener noreferrer" class="resource-card" data-difficulty="${r.difficulty || 'intermediate'}" data-format="${r.format || 'article'}">
                                 <div class="resource-tag-row">
                                     <span class="resource-type">${r.type}</span>
                                     ${r.free ? '<span class="resource-free-badge">FREE</span>' : ''}
+                                    <span class="difficulty-badge difficulty-${r.difficulty || 'intermediate'}">${(r.difficulty || 'intermediate').toUpperCase()}</span>
                                 </div>
                                 <div class="resource-title">${r.title}</div>
                                 <div class="resource-provider">${r.provider}</div>
+                                <div class="resource-meta-row">
+                                    <span class="resource-format-icon">${formatIcons[r.format] || '📄'}</span>
+                                    <span class="resource-time">⏱ ${r.time || '—'}</span>
+                                </div>
                             </a>
                         `).join('')}
                     </div>
@@ -1348,6 +2034,35 @@ function exportProgress() {
     a.download = `ai-roadmap-progress-${new Date().toISOString().slice(0,10)}.json`;
     a.click();
     showToast('📥 Progress exported!');
+}
+
+// ─────────────────────────────────────────────
+//  RESOURCE FILTERING
+// ─────────────────────────────────────────────
+const activeFilters = {}; // { weekId: { difficulty: 'all', format: 'all' } }
+
+function filterResources(weekId, filterType, value, btnEl) {
+    if (!activeFilters[weekId]) activeFilters[weekId] = { difficulty: 'all', format: 'all' };
+    activeFilters[weekId][filterType] = value;
+
+    // Update active button state
+    const filterBar = btnEl.closest('.filter-group');
+    filterBar.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btnEl.classList.add('active');
+
+    // Apply filters
+    const container = document.getElementById(`resources-${weekId}`);
+    if (!container) return;
+    const cards = container.querySelectorAll('.resource-card');
+    const filters = activeFilters[weekId];
+
+    cards.forEach(card => {
+        const cardDifficulty = card.getAttribute('data-difficulty');
+        const cardFormat = card.getAttribute('data-format');
+        const matchesDifficulty = filters.difficulty === 'all' || cardDifficulty === filters.difficulty;
+        const matchesFormat = filters.format === 'all' || cardFormat === filters.format;
+        card.style.display = (matchesDifficulty && matchesFormat) ? '' : 'none';
+    });
 }
 
 // ─────────────────────────────────────────────
